@@ -1,0 +1,15 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/apps/landing-page/src/app/page": [
+      "static/media/HelveticaNowDisplay_Light-s.p.5142b765.woff2",
+      "static/media/HelveticaNowDisplay_Regular-s.p.c490f471.woff2",
+      "static/media/HelveticaNowDisplay_RegIta-s.p.e91b601a.woff2",
+      "static/media/HelveticaNowDisplay_Medium-s.p.fea1058b.woff2",
+      "static/media/HelveticaNowDisplay_Bold-s.p.e67cc1d1.woff2",
+      "static/media/Distrampler-s.p.61b4111e.ttf"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}
