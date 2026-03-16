@@ -1,0 +1,16 @@
+-- ============================================================
+-- SEED: Primeiro usuário Admin
+-- ============================================================
+-- ATENÇÃO: Este arquivo NÃO deve ser executado via CLI automaticamente.
+--
+-- Para criar o primeiro usuário admin:
+--
+-- 1. Acesse: https://supabase.com/dashboard/project/zcwgxmoibuxskhmbtzka/auth/users
+-- 2. Clique em "Add User" → "Create New User"
+-- 3. Informe o email e uma senha forte (mínimo 8 caracteres)
+-- 4. Após a criação, copie o UUID do usuário
+-- 5. Execute o SQL abaixo no SQL Editor do Supabase substituindo <USER_UUID>:
+
+-- UPDATE public.profiles
+-- SET role = 'admin', full_name = 'Administrador Diamond'
+-- WHERE id = '<USER_UUID>';

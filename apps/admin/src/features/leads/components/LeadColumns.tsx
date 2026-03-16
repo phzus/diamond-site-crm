@@ -1,0 +1,102 @@
+'use client'
+
+import { ColumnDef } from '@tanstack/react-table'
+import type { Lead } from '../types/lead.types'
+import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { ArrowUpDown } from 'lucide-react'
+
+const priorityConfig = {
+  high:   { label: 'Alta',  dot: 'bg-red-500' },
+  medium: { label: 'Média', dot: 'bg-yellow-500' },
+  low:    { label: 'Baixa', dot: 'bg-green-500' },
+}
+
+export const leadColumns: ColumnDef<Lead>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(v) => row.toggleSelected(!!v)}
+        onClick={(e) => e.stopPropagation()}
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'full_name',
+    header: ({ column }) => (
+      <Button variant="ghost" size="sm" onClick={() => column.toggleSorting()}>
+        Nome <ArrowUpDown className="ml-1 h-3 w-3" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div>
+        <p className="font-medium">{row.original.full_name}</p>
+        <p className="text-xs text-muted-foreground">{row.original.email}</p>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'phone',
+    header: 'Telefone',
+    cell: ({ row }) => row.original.phone || <span className="text-muted-foreground">—</span>,
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+  },
+  {
+    accessorKey: 'priority',
+    header: 'Prioridade',
+    cell: ({ row }) => {
+      const p = priorityConfig[row.original.priority]
+      return (
+        <div className="flex items-center gap-2">
+          <span className={`h-2 w-2 rounded-full ${p.dot}`} />
+          <span className="text-sm">{p.label}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'assigned_to',
+    header: 'Responsável',
+    cell: ({ row }) => {
+      const assignee = row.original.assignee
+      if (!assignee) return <span className="text-muted-foreground text-sm">Não atribuído</span>
+      return (
+        <div className="flex items-center gap-2">
+          <Avatar className="h-6 w-6">
+            <AvatarFallback className="text-xs">
+              {assignee.full_name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-sm">{assignee.full_name}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'created_at',
+    header: ({ column }) => (
+      <Button variant="ghost" size="sm" onClick={() => column.toggleSorting()}>
+        Criado em <ArrowUpDown className="ml-1 h-3 w-3" />
+      </Button>
+    ),
+    cell: ({ row }) =>
+      format(new Date(row.original.created_at), 'dd/MM/yyyy', { locale: ptBR }),
+  },
+]

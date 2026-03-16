@@ -1,0 +1,53 @@
+'use client'
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { LeadForm } from './LeadForm'
+import { useCreateLead } from '../hooks/useLeads'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { createClient } from '@/lib/supabase/client'
+import type { LeadFormValues } from '../schemas/lead.schema'
+
+interface CreateLeadDialogProps {
+  open: boolean
+  onClose: () => void
+}
+
+export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
+  const createLead = useCreateLead()
+  const { data: currentUser } = useCurrentUser()
+
+  async function handleSubmit(values: LeadFormValues) {
+    const supabase = createClient()
+    const lead = await createLead.mutateAsync({
+      ...values,
+      source: 'manual',
+      status: 'new',
+    })
+
+    if (lead && currentUser) {
+      await supabase.from('lead_activities').insert({
+        lead_id: lead.id,
+        action_type: 'created',
+        to_value: 'manual',
+        performed_by: currentUser.id,
+      })
+    }
+
+    onClose()
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Novo Lead</DialogTitle>
+        </DialogHeader>
+        <LeadForm
+          onSubmit={handleSubmit}
+          isLoading={createLead.isPending}
+          submitLabel="Criar Lead"
+        />
+      </DialogContent>
+    </Dialog>
+  )
+}
