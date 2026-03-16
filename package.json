@@ -10,8 +10,8 @@
     "dev:admin": "npm run dev -w apps/admin"
   },
   "overrides": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
