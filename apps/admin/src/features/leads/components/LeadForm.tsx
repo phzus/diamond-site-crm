@@ -32,30 +32,31 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
       message:     defaultValues?.message || '',
       priority:    defaultValues?.priority || 'medium',
       assigned_to: defaultValues?.assigned_to || null,
+      invited_by:  defaultValues?.invited_by || '',
     },
   })
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <Label htmlFor="full_name">Nome completo *</Label>
         <Input id="full_name" {...register('full_name')} placeholder="João da Silva" />
         {errors.full_name && <p className="text-xs text-destructive">{errors.full_name.message}</p>}
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <Label htmlFor="email">Email *</Label>
         <Input id="email" type="email" {...register('email')} placeholder="joao@email.com" />
         {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <Label htmlFor="phone">Telefone</Label>
         <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Label>Prioridade</Label>
           <Select
             value={watch('priority')}
@@ -72,7 +73,7 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
           </Select>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <Label>Responsável</Label>
           <Select
             value={watch('assigned_to') || 'unassigned'}
@@ -93,7 +94,12 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
         </div>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1">
+        <Label htmlFor="invited_by">Convidado por:</Label>
+        <Input id="invited_by" {...register('invited_by')} placeholder="Nome de quem indicou" />
+      </div>
+
+      <div className="space-y-1">
         <Label htmlFor="message">Observação inicial</Label>
         <Textarea
           id="message"

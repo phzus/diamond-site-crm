@@ -185,6 +185,10 @@
    BASE STYLES
    ============================================ */
 @layer base {
+  button, a, [role="button"] {
+    cursor: pointer;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

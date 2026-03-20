@@ -7,12 +7,12 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <AnimatePresence mode="popLayout">
+    <AnimatePresence mode="sync">
       <motion.div
         key={pathname}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.1 }}
+        transition={{ duration: 0.08 }}
         className="flex flex-col flex-1 min-h-0"
       >
         {children}

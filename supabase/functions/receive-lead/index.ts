@@ -11,6 +11,8 @@ interface LeadPayload {
   email: string
   phone?: string
   message?: string
+  state?: string
+  invited_by?: string
   utm_source?: string
   utm_medium?: string
   utm_campaign?: string
@@ -56,6 +58,8 @@ Deno.serve(async (req) => {
     const full_name = payload.full_name.trim().slice(0, 255)
     const phone = payload.phone?.trim().slice(0, 20) ?? null
     const message = payload.message?.trim().slice(0, 2000) ?? null
+    const state = payload.state?.trim().slice(0, 2) ?? null
+    const invited_by = payload.invited_by?.trim().slice(0, 255) ?? null
 
     // Service role para bypassar RLS nesta operação (landing page não tem auth de usuário)
     const supabase = createClient(
@@ -79,6 +83,8 @@ Deno.serve(async (req) => {
           ...(payload.utm_source && { utm_source: payload.utm_source }),
           ...(payload.utm_medium && { utm_medium: payload.utm_medium }),
           ...(payload.utm_campaign && { utm_campaign: payload.utm_campaign }),
+          ...(invited_by && { invited_by }),
+          ...(state && { state }),
         })
         .eq('id', existing.id)
 
@@ -98,6 +104,8 @@ Deno.serve(async (req) => {
         email,
         phone,
         message,
+        state,
+        invited_by,
         source: 'landing-page',
         status: 'new',
         priority: 'medium',

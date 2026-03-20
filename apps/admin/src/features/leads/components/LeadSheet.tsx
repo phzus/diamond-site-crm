@@ -15,7 +15,7 @@ import { useUsers } from '@/features/users/hooks/useUsers'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Globe, Phone, Mail, ChevronDown } from 'lucide-react'
+import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { LeadStatus } from '../types/lead.types'
 
@@ -114,6 +114,31 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Estado</p>
+                    {lead.state ? (
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-sm">{lead.state}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Convidado por</p>
+                    {lead.invited_by ? (
+                      <div className="flex items-center gap-1.5">
+                        <UserCheck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-sm">{lead.invited_by}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Responsável</p>
                   <Select
@@ -163,6 +188,16 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
                     }}
                   />
                 </div>
+
+                {lead.message && (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Observação</p>
+                    <div className="flex items-start gap-1.5">
+                      <MessageSquare className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                      <span className="text-sm text-muted-foreground">{lead.message}</span>
+                    </div>
+                  </div>
+                )}
 
                 {lead.utm_source && (
                   <div>

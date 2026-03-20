@@ -17,6 +17,7 @@ export const leadFormSchema = z.object({
     .nullable(),
   priority: z.enum(['low', 'medium', 'high']).default('medium'),
   assigned_to: z.string().optional().nullable(),
+  invited_by: z.string().max(255).optional().nullable(),
 })
 
 export type LeadFormValues = z.infer<typeof leadFormSchema>
