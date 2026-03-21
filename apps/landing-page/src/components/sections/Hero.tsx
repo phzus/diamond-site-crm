@@ -88,12 +88,12 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
+            className="mt-12 flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6"
           >
             {/* Secondary CTA (Outline) */}
             <Link
               href="#saiba-mais"
-              className="group relative inline-flex h-14 min-w-[160px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-8 font-helvetica text-base font-medium text-white transition-all duration-300 hover:border-white hover:bg-white/5"
+              className="group relative inline-flex h-12 min-w-[130px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-6 font-helvetica text-sm font-medium text-white transition-all duration-300 hover:border-white hover:bg-white/5 sm:h-14 sm:min-w-[160px] sm:px-8 sm:text-base"
             >
               <span className="relative z-10">SAIBA MAIS</span>
             </Link>
@@ -102,7 +102,7 @@ export function Hero() {
             <button
               type="button"
               onClick={() => setIsRegisterOpen(true)}
-              className="group relative inline-flex h-14 min-w-[200px] items-center justify-center overflow-hidden rounded-full bg-white px-8 font-helvetica text-base font-medium text-black shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.5)]"
+              className="group relative inline-flex h-12 min-w-[130px] items-center justify-center overflow-hidden rounded-full bg-white px-6 font-helvetica text-sm font-medium text-black shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.5)] sm:h-14 sm:min-w-[200px] sm:px-8 sm:text-base"
             >
               <span className="relative z-10 flex items-center gap-2">
                 CADASTRE-SE

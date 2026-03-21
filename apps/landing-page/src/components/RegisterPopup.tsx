@@ -111,7 +111,7 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
 
         {/* Panel */}
         <Dialog.Content
-          className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/[0.08] p-8 backdrop-blur-2xl outline-none max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
+          className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/[0.08] p-6 sm:p-8 backdrop-blur-2xl outline-none max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
           style={{
             background:
               "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%)",
@@ -192,52 +192,77 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 </div>
               </div>
 
-              {/* Estado */}
-              <div className="space-y-1">
-                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                  Estado *
-                </label>
-                <div className="relative mt-0.5">
-                  <select
-                    {...register("state", { required: "Selecione seu estado" })}
-                    className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 pr-10 font-helvetica text-sm text-white outline-none transition-all focus:border-white/20 [&>option]:bg-zinc-900 [&>option]:text-white"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Selecione seu estado
-                    </option>
-                    {BRAZILIAN_STATES.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
+              {/* Estado | Cidade */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Estado *
+                  </label>
+                  <div className="relative mt-0.5">
+                    <select
+                      {...register("state", { required: "Selecione seu estado" })}
+                      className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 pr-10 font-helvetica text-sm text-white outline-none transition-all focus:border-white/20 [&>option]:bg-zinc-900 [&>option]:text-white"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Estado
                       </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+                      {BRAZILIAN_STATES.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+                  </div>
+                  {errors.state && (
+                    <p className="text-xs text-red-400">{errors.state.message}</p>
+                  )}
                 </div>
-                {errors.state && (
-                  <p className="text-xs text-red-400">{errors.state.message}</p>
-                )}
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Cidade
+                  </label>
+                  <input
+                    {...register("city")}
+                    placeholder="São Paulo"
+                    className={inputClass}
+                  />
+                </div>
               </div>
 
-              {/* Telefone com máscara */}
-              <div className="space-y-1">
-                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                  Telefone *
-                </label>
-                <input
-                  {...phoneReg}
-                  onChange={(e) => {
-                    e.target.value = formatPhone(e.target.value);
-                    phoneReg.onChange(e);
-                  }}
-                  type="tel"
-                  placeholder="(00) 00000-0000"
-                  maxLength={15}
-                  className={inputClass}
-                />
-                {errors.phone && (
-                  <p className="text-xs text-red-400">{errors.phone.message}</p>
-                )}
+              {/* Telefone | Aniversário */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Telefone *
+                  </label>
+                  <input
+                    {...phoneReg}
+                    onChange={(e) => {
+                      e.target.value = formatPhone(e.target.value);
+                      phoneReg.onChange(e);
+                    }}
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    maxLength={15}
+                    className={inputClass}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-400">{errors.phone.message}</p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Aniversário
+                  </label>
+                  <input
+                    {...register("birth_date")}
+                    type="date"
+                    className={inputClass}
+                    style={{ colorScheme: "dark" }}
+                  />
+                </div>
               </div>
 
               {/* E-mail */}
@@ -260,19 +285,6 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 {errors.email && (
                   <p className="text-xs text-red-400">{errors.email.message}</p>
                 )}
-              </div>
-
-              {/* Aniversário */}
-              <div className="space-y-1">
-                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                  Seu Aniversário
-                </label>
-                <input
-                  {...register("birth_date")}
-                  type="date"
-                  className={inputClass}
-                  style={{ colorScheme: "dark" }}
-                />
               </div>
 
               {/* Indicação */}
