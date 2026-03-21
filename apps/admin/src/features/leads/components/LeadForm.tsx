@@ -5,43 +5,62 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { leadFormSchema, type LeadFormValues } from '../schemas/lead.schema'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { useUsers } from '@/features/users/hooks/useUsers'
 import { Loader2 } from 'lucide-react'
 import type { Lead } from '../types/lead.types'
 
+const BRAZILIAN_STATES = [
+  { value: 'AC', label: 'Acre' }, { value: 'AL', label: 'Alagoas' },
+  { value: 'AP', label: 'Amapá' }, { value: 'AM', label: 'Amazonas' },
+  { value: 'BA', label: 'Bahia' }, { value: 'CE', label: 'Ceará' },
+  { value: 'DF', label: 'Distrito Federal' }, { value: 'ES', label: 'Espírito Santo' },
+  { value: 'GO', label: 'Goiás' }, { value: 'MA', label: 'Maranhão' },
+  { value: 'MT', label: 'Mato Grosso' }, { value: 'MS', label: 'Mato Grosso do Sul' },
+  { value: 'MG', label: 'Minas Gerais' }, { value: 'PA', label: 'Pará' },
+  { value: 'PB', label: 'Paraíba' }, { value: 'PR', label: 'Paraná' },
+  { value: 'PE', label: 'Pernambuco' }, { value: 'PI', label: 'Piauí' },
+  { value: 'RJ', label: 'Rio de Janeiro' }, { value: 'RN', label: 'Rio Grande do Norte' },
+  { value: 'RS', label: 'Rio Grande do Sul' }, { value: 'RO', label: 'Rondônia' },
+  { value: 'RR', label: 'Roraima' }, { value: 'SC', label: 'Santa Catarina' },
+  { value: 'SP', label: 'São Paulo' }, { value: 'SE', label: 'Sergipe' },
+  { value: 'TO', label: 'Tocantins' },
+]
+
 interface LeadFormProps {
-  defaultValues?: Partial<Lead>
+  defaultValues?: Partial<LeadFormValues>
   onSubmit: (values: LeadFormValues) => void
   isLoading?: boolean
   submitLabel?: string
 }
 
 export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Salvar' }: LeadFormProps) {
-  const { data: users } = useUsers()
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema) as any,
     defaultValues: {
-      full_name:   defaultValues?.full_name || '',
+      first_name:  defaultValues?.first_name || '',
+      last_name:   defaultValues?.last_name || '',
       email:       defaultValues?.email || '',
       phone:       defaultValues?.phone || '',
-      message:     defaultValues?.message || '',
-      priority:    defaultValues?.priority || 'medium',
-      assigned_to: defaultValues?.assigned_to || null,
+      state:       defaultValues?.state || null,
       invited_by:  defaultValues?.invited_by || '',
     },
   })
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1">
-        <Label htmlFor="full_name">Nome completo *</Label>
-        <Input id="full_name" {...register('full_name')} placeholder="João da Silva" />
-        {errors.full_name && <p className="text-xs text-destructive">{errors.full_name.message}</p>}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="first_name">Nome *</Label>
+          <Input id="first_name" {...register('first_name')} placeholder="João" />
+          {errors.first_name && <p className="text-xs text-destructive">{errors.first_name.message}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="last_name">Sobrenome *</Label>
+          <Input id="last_name" {...register('last_name')} placeholder="Silva" />
+          {errors.last_name && <p className="text-xs text-destructive">{errors.last_name.message}</p>}
+        </div>
       </div>
 
       <div className="space-y-1">
@@ -50,44 +69,24 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
         {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="phone">Telefone</Label>
-        <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
-      </div>
-
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label>Prioridade</Label>
-          <Select
-            value={watch('priority')}
-            onValueChange={(v) => setValue('priority', v as any)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="high">Alta</SelectItem>
-              <SelectItem value="medium">Média</SelectItem>
-              <SelectItem value="low">Baixa</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label htmlFor="phone">Telefone</Label>
+          <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
         </div>
-
         <div className="space-y-1">
-          <Label>Responsável</Label>
+          <Label>Estado</Label>
           <Select
-            value={watch('assigned_to') || 'unassigned'}
-            onValueChange={(v) => setValue('assigned_to', v === 'unassigned' ? null : v)}
+            value={watch('state') || 'none'}
+            onValueChange={(v) => setValue('state', v === 'none' ? null : v)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Não atribuído" />
+              <SelectValue placeholder="Selecione" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="unassigned">Não atribuído</SelectItem>
-              {users?.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.full_name}
-                </SelectItem>
+              <SelectItem value="none">Não informado</SelectItem>
+              {BRAZILIAN_STATES.map((s) => (
+                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -95,19 +94,8 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="invited_by">Convidado por:</Label>
+        <Label htmlFor="invited_by">Convidado por</Label>
         <Input id="invited_by" {...register('invited_by')} placeholder="Nome de quem indicou" />
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="message">Observação inicial</Label>
-        <Textarea
-          id="message"
-          {...register('message')}
-          placeholder="Informações adicionais sobre o lead..."
-          rows={3}
-          className="resize-none"
-        />
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>

@@ -19,9 +19,14 @@ export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
   async function handleSubmit(values: LeadFormValues) {
     const supabase = createClient()
     const lead = await createLead.mutateAsync({
-      ...values,
+      full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
+      email: values.email,
+      phone: values.phone ?? null,
+      state: values.state ?? null,
+      invited_by: values.invited_by ?? null,
       source: 'manual',
       status: 'new',
+      priority: 'medium',
     })
 
     if (lead && currentUser) {

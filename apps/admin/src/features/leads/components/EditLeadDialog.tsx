@@ -21,7 +21,16 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
     if (!leadId || !currentUser) return
     const supabase = createClient()
 
-    await updateLead.mutateAsync({ id: leadId, data: values })
+    await updateLead.mutateAsync({
+      id: leadId,
+      data: {
+        full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
+        email: values.email,
+        phone: values.phone ?? null,
+        state: values.state ?? null,
+        invited_by: values.invited_by ?? null,
+      },
+    })
 
     await supabase.from('lead_activities').insert({
       lead_id: leadId,
@@ -32,6 +41,19 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
     onClose()
   }
 
+  function getDefaultValues() {
+    if (!lead) return undefined
+    const nameParts = lead.full_name.trim().split(' ')
+    return {
+      first_name: nameParts[0] || '',
+      last_name: nameParts.slice(1).join(' ') || '',
+      email: lead.email,
+      phone: lead.phone,
+      state: lead.state,
+      invited_by: lead.invited_by,
+    }
+  }
+
   return (
     <Dialog open={!!leadId} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-[480px]">
@@ -40,7 +62,7 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
         </DialogHeader>
         {lead && (
           <LeadForm
-            defaultValues={lead}
+            defaultValues={getDefaultValues()}
             onSubmit={handleSubmit}
             isLoading={updateLead.isPending}
             submitLabel="Salvar Alterações"
