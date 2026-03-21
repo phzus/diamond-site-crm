@@ -192,6 +192,40 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 </div>
               </div>
 
+              {/* Telefone | Aniversário */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Telefone *
+                  </label>
+                  <input
+                    {...phoneReg}
+                    onChange={(e) => {
+                      e.target.value = formatPhone(e.target.value);
+                      phoneReg.onChange(e);
+                    }}
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    maxLength={15}
+                    className={inputClass}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-400">{errors.phone.message}</p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    Aniversário
+                  </label>
+                  <input
+                    {...register("birth_date")}
+                    type="date"
+                    className={inputClass}
+                    style={{ colorScheme: "dark" }}
+                  />
+                </div>
+              </div>
+
               {/* Estado | Cidade */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -227,40 +261,6 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                     {...register("city")}
                     placeholder="São Paulo"
                     className={inputClass}
-                  />
-                </div>
-              </div>
-
-              {/* Telefone | Aniversário */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                    Telefone *
-                  </label>
-                  <input
-                    {...phoneReg}
-                    onChange={(e) => {
-                      e.target.value = formatPhone(e.target.value);
-                      phoneReg.onChange(e);
-                    }}
-                    type="tel"
-                    placeholder="(00) 00000-0000"
-                    maxLength={15}
-                    className={inputClass}
-                  />
-                  {errors.phone && (
-                    <p className="text-xs text-red-400">{errors.phone.message}</p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                    Aniversário
-                  </label>
-                  <input
-                    {...register("birth_date")}
-                    type="date"
-                    className={inputClass}
-                    style={{ colorScheme: "dark" }}
                   />
                 </div>
               </div>
