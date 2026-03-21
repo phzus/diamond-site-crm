@@ -23,6 +23,8 @@ export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
       email: values.email,
       phone: values.phone ?? null,
       state: values.state ?? null,
+      city: values.city ?? null,
+      birth_date: values.birth_date ?? null,
       invited_by: values.invited_by ?? null,
       source: 'manual',
       status: 'new',

@@ -21,6 +21,8 @@ export interface Lead {
   utm_campaign: string | null
   invited_by: string | null
   state: string | null
+  city: string | null
+  birth_date: string | null
   created_at: string
   updated_at: string
   // Join

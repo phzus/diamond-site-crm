@@ -15,7 +15,7 @@ import { useUsers } from '@/features/users/hooks/useUsers'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare } from 'lucide-react'
+import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare, Building2, Cake } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { LeadStatus } from '../types/lead.types'
 
@@ -121,6 +121,33 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
                       <div className="flex items-center gap-1.5">
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span className="text-sm">{lead.state}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Cidade</p>
+                    {lead.city ? (
+                      <div className="flex items-center gap-1.5">
+                        <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-sm">{lead.city}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Aniversário</p>
+                    {lead.birth_date ? (
+                      <div className="flex items-center gap-1.5">
+                        <Cake className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-sm">
+                          {format(new Date(lead.birth_date + 'T00:00:00'), 'dd/MM/yyyy', { locale: ptBR })}
+                        </span>
                       </div>
                     ) : (
                       <span className="text-sm text-muted-foreground">—</span>

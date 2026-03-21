@@ -262,6 +262,19 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 )}
               </div>
 
+              {/* Aniversário */}
+              <div className="space-y-1">
+                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                  Seu Aniversário
+                </label>
+                <input
+                  {...register("birth_date")}
+                  type="date"
+                  className={inputClass}
+                  style={{ colorScheme: "dark" }}
+                />
+              </div>
+
               {/* Indicação */}
               <div className="space-y-1">
                 <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">

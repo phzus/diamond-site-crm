@@ -44,6 +44,8 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
       email:       defaultValues?.email || '',
       phone:       defaultValues?.phone || '',
       state:       defaultValues?.state || null,
+      city:        defaultValues?.city || '',
+      birth_date:  defaultValues?.birth_date || '',
       invited_by:  defaultValues?.invited_by || '',
     },
   })
@@ -90,6 +92,17 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
               ))}
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="city">Cidade</Label>
+          <Input id="city" {...register('city')} placeholder="São Paulo" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="birth_date">Aniversário</Label>
+          <Input id="birth_date" type="date" {...register('birth_date')} />
         </div>
       </div>
 

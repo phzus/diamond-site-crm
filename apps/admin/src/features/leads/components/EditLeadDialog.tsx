@@ -28,6 +28,8 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
         email: values.email,
         phone: values.phone ?? null,
         state: values.state ?? null,
+        city: values.city ?? null,
+        birth_date: values.birth_date ?? null,
         invited_by: values.invited_by ?? null,
       },
     })
@@ -50,6 +52,8 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
       email: lead.email,
       phone: lead.phone,
       state: lead.state,
+      city: lead.city,
+      birth_date: lead.birth_date,
       invited_by: lead.invited_by,
     }
   }

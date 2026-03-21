@@ -15,6 +15,8 @@ export const leadFormSchema = z.object({
     .email('Formato de email inválido'),
   phone: z.string().optional().nullable(),
   state: z.string().max(2).optional().nullable(),
+  city: z.string().max(255).optional().nullable(),
+  birth_date: z.string().optional().nullable(),
   invited_by: z.string().max(255).optional().nullable(),
 })
 
