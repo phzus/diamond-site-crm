@@ -77,6 +77,13 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
           <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
         </div>
         <div className="space-y-1">
+          <Label htmlFor="city">Cidade</Label>
+          <Input id="city" {...register('city')} placeholder="São Paulo" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
           <Label>Estado</Label>
           <Select
             value={watch('state') || 'none'}
@@ -92,13 +99,6 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
               ))}
             </SelectContent>
           </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <Label htmlFor="city">Cidade</Label>
-          <Input id="city" {...register('city')} placeholder="São Paulo" />
         </div>
         <div className="space-y-1">
           <Label htmlFor="birth_date">Aniversário</Label>
