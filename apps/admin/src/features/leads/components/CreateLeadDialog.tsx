@@ -18,29 +18,33 @@ export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
 
   async function handleSubmit(values: LeadFormValues) {
     const supabase = createClient()
-    const lead = await createLead.mutateAsync({
-      full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
-      email: values.email,
-      phone: values.phone ?? null,
-      state: values.state ?? null,
-      city: values.city ?? null,
-      birth_date: values.birth_date ?? null,
-      invited_by: values.invited_by ?? null,
-      source: 'manual',
-      status: 'new',
-      priority: 'medium',
-    })
-
-    if (lead && currentUser) {
-      await supabase.from('lead_activities').insert({
-        lead_id: lead.id,
-        action_type: 'created',
-        to_value: 'manual',
-        performed_by: currentUser.id,
+    try {
+      const lead = await createLead.mutateAsync({
+        full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
+        email: values.email,
+        phone: values.phone ?? null,
+        state: values.state ?? null,
+        city: values.city ?? null,
+        birth_date: values.birth_date ?? null,
+        invited_by: values.invited_by ?? null,
+        source: 'manual',
+        status: 'new',
+        priority: 'medium',
       })
-    }
 
-    onClose()
+      if (lead && currentUser) {
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          action_type: 'created',
+          to_value: 'manual',
+          performed_by: currentUser.id,
+        })
+      }
+
+      onClose()
+    } catch {
+      // error is already handled by useCreateLead onError toast
+    }
   }
 
   return (

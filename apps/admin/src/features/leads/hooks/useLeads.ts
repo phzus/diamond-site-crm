@@ -41,7 +41,13 @@ export function useCreateLead() {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
       toast.success('Lead criado com sucesso!')
     },
-    onError: () => toast.error('Erro ao criar lead.'),
+    onError: (error: any) => {
+      if (error?.code === '23505') {
+        toast.error('Este e-mail já está cadastrado.')
+      } else {
+        toast.error('Erro ao criar lead.')
+      }
+    },
   })
 }
 
