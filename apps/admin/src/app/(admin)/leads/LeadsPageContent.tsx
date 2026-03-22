@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
-import { useLeads } from '@/features/leads/hooks/useLeads'
+import { useLeads, useLeadsRealtime } from '@/features/leads/hooks/useLeads'
 import { useLeadFilters } from '@/features/leads/hooks/useLeadFilters'
 import { leadColumns } from '@/features/leads/components/LeadColumns'
 import { LeadToolbar } from '@/features/leads/components/LeadToolbar'
@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 import type { Lead } from '@/features/leads/types/lead.types'
 
 export function LeadsPageContent() {
+  useLeadsRealtime()
   const [filters, setFilters] = useLeadFilters()
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
   const [editLeadId, setEditLeadId] = useState<string | null>(null)

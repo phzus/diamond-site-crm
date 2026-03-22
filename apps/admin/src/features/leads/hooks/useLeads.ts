@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -30,6 +31,22 @@ export function useLead(id: string) {
     queryFn: () => getLeadById(id),
     enabled: !!id,
   })
+}
+
+export function useLeadsRealtime() {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('leads-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
+        queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [queryClient])
 }
 
 export function useCreateLead() {
