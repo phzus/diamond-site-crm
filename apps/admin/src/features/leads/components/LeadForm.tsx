@@ -34,6 +34,14 @@ interface LeadFormProps {
   submitLabel?: string
 }
 
+function formatCpf(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
+}
+
 export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Salvar' }: LeadFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<LeadFormValues>({
@@ -41,6 +49,7 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
     defaultValues: {
       first_name:  defaultValues?.first_name || '',
       last_name:   defaultValues?.last_name || '',
+      cpf:         defaultValues?.cpf || '',
       email:       defaultValues?.email || '',
       phone:       defaultValues?.phone || '',
       state:       defaultValues?.state || null,
@@ -49,6 +58,8 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
       invited_by:  defaultValues?.invited_by || '',
     },
   })
+
+  const cpfReg = register('cpf')
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -65,10 +76,25 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
         </div>
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="email">Email *</Label>
-        <Input id="email" type="email" {...register('email')} placeholder="joao@email.com" />
-        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="email">Email *</Label>
+          <Input id="email" type="email" {...register('email')} placeholder="joao@email.com" />
+          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="cpf">CPF</Label>
+          <Input
+            id="cpf"
+            {...cpfReg}
+            onChange={(e) => {
+              e.target.value = formatCpf(e.target.value)
+              cpfReg.onChange(e)
+            }}
+            placeholder="000.000.000-00"
+            maxLength={14}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

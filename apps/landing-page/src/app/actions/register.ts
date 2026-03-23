@@ -12,6 +12,7 @@ const registerSchema = z.object({
     "Telefone inválido"
   ),
   email: z.string().email("Email inválido"),
+  cpf: z.string().max(14).optional().or(z.literal("")),
   city: z.string().max(255).optional().or(z.literal("")),
   birth_date: z.string().optional().or(z.literal("")),
   invited_by: z.string().max(255).optional().or(z.literal("")),
@@ -39,7 +40,7 @@ export async function submitRegisterForm(
       };
     }
 
-    const { first_name, last_name, state, phone, email, city, birth_date, invited_by } = validated.data;
+    const { first_name, last_name, state, phone, email, cpf, city, birth_date, invited_by } = validated.data;
     const full_name = `${first_name.trim()} ${last_name.trim()}`;
     const emailNorm = email.trim().toLowerCase();
 
@@ -81,6 +82,7 @@ export async function submitRegisterForm(
       const { error: insertError } = await supabase.from("leads").insert({
         full_name,
         email: emailNorm,
+        cpf: cpf || null,
         phone,
         state,
         city: city || null,

@@ -22,6 +22,7 @@ export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
       const lead = await createLead.mutateAsync({
         full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
         email: values.email,
+        cpf: values.cpf ?? null,
         phone: values.phone ?? null,
         state: values.state ?? null,
         city: values.city ?? null,

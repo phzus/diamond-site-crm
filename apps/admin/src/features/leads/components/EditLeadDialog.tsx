@@ -26,6 +26,7 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
       data: {
         full_name: `${values.first_name.trim()} ${values.last_name.trim()}`,
         email: values.email,
+        cpf: values.cpf ?? null,
         phone: values.phone ?? null,
         state: values.state ?? null,
         city: values.city ?? null,
@@ -49,6 +50,7 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
     return {
       first_name: nameParts[0] || '',
       last_name: nameParts.slice(1).join(' ') || '',
+      cpf: lead.cpf,
       email: lead.email,
       phone: lead.phone,
       state: lead.state,

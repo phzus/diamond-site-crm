@@ -36,6 +36,14 @@ const BRAZILIAN_STATES = [
   { value: "TO", label: "Tocantins" },
 ];
 
+function formatCpf(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
   if (digits.length === 0) return "";
@@ -76,6 +84,7 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
     return () => clearTimeout(t);
   }, [toast]);
 
+  const cpfReg = register("cpf");
   const phoneReg = register("phone", {
     required: "Telefone é obrigatório",
     validate: (v) => v.replace(/\D/g, "").length >= 10 || "Telefone inválido",
@@ -224,6 +233,25 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                     style={{ colorScheme: "dark" }}
                   />
                 </div>
+              </div>
+
+              {/* CPF */}
+              <div className="space-y-1">
+                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                  CPF
+                </label>
+                <input
+                  {...cpfReg}
+                  onChange={(e) => {
+                    e.target.value = formatCpf(e.target.value);
+                    cpfReg.onChange(e);
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                  className={inputClass}
+                />
               </div>
 
               {/* Estado | Cidade */}

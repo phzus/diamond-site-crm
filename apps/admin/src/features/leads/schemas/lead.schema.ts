@@ -13,6 +13,7 @@ export const leadFormSchema = z.object({
     .string()
     .min(1, 'Email é obrigatório')
     .email('Formato de email inválido'),
+  cpf: z.string().max(14).optional().nullable(),
   phone: z.string().optional().nullable(),
   state: z.string().max(2).optional().nullable(),
   city: z.string().max(255).optional().nullable(),

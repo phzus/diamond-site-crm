@@ -15,7 +15,7 @@ import { useUsers } from '@/features/users/hooks/useUsers'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare, Building2, Cake } from 'lucide-react'
+import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare, Building2, Cake, CreditCard } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { LeadStatus } from '../types/lead.types'
 
@@ -93,6 +93,17 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
               <div className="px-6 py-4 border-b space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">CPF</p>
+                    {lead.cpf ? (
+                      <div className="flex items-center gap-1.5">
+                        <CreditCard className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-sm font-mono">{lead.cpf}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                  </div>
+                  <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Email</p>
                     <div className="flex items-center gap-1.5">
                       <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -101,6 +112,9 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
                       </a>
                     </div>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Telefone</p>
                     {lead.phone ? (

@@ -14,6 +14,8 @@ import {
   Menu,
   Sun,
   Moon,
+  ClipboardList,
+  LayoutGrid,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
@@ -27,6 +29,8 @@ import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/leads', label: 'Leads', icon: Users },
+  { href: '/operacional', label: 'Operacional', icon: ClipboardList, exact: true },
+  { href: '/operacional/cartoes', label: 'Cartões', icon: LayoutGrid },
 ]
 
 const adminNavItems = [
@@ -54,7 +58,7 @@ function NavLinks({
           className={cn(
             'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
             'hover:bg-accent hover:text-accent-foreground',
-            pathname.startsWith(item.href)
+            (item.exact ? pathname === item.href : pathname.startsWith(item.href))
               ? 'bg-accent text-accent-foreground'
               : 'text-muted-foreground'
           )}
