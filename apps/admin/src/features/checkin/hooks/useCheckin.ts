@@ -9,6 +9,9 @@ import {
   getOpenSessions,
   checkinLead,
   checkoutSession,
+  addCard,
+  deleteCard,
+  updateCardStatus,
 } from '../services/checkin.service'
 
 export const checkinKeys = {
@@ -63,6 +66,42 @@ export function useCheckin() {
       toast.success(`Check-in realizado — Cartão nº ${card.number}`)
     },
     onError: (error: Error) => toast.error(error.message || 'Erro ao realizar check-in.'),
+  })
+}
+
+export function useAddCard() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (number: number) => addCard(number),
+    onSuccess: (_, number) => {
+      queryClient.invalidateQueries({ queryKey: checkinKeys.cards })
+      toast.success(`Cartão nº ${number} adicionado.`)
+    },
+    onError: (error: Error) => toast.error(error.message || 'Erro ao adicionar cartão.'),
+  })
+}
+
+export function useDeleteCard() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteCard(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: checkinKeys.cards })
+      toast.success('Cartão removido.')
+    },
+    onError: () => toast.error('Erro ao remover cartão.'),
+  })
+}
+
+export function useUpdateCardStatus() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: 'available' | 'blocked' }) =>
+      updateCardStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: checkinKeys.cards })
+    },
+    onError: () => toast.error('Erro ao atualizar status do cartão.'),
   })
 }
 

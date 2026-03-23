@@ -83,6 +83,27 @@ export async function checkinLead(
   return { session: session as Session, card: card as Card }
 }
 
+export async function addCard(number: number): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.from('cards').insert({ number })
+  if (error) {
+    if (error.code === '23505') throw new Error(`Cartão nº ${number} já existe.`)
+    throw error
+  }
+}
+
+export async function deleteCard(id: string): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.from('cards').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function updateCardStatus(id: string, status: 'available' | 'blocked'): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase.from('cards').update({ status }).eq('id', id)
+  if (error) throw error
+}
+
 export async function checkoutSession(
   sessionId: string,
   cardId: string,
