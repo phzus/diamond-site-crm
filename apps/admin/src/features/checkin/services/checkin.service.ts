@@ -40,6 +40,27 @@ export async function findLeadByCpf(cpf: string) {
 
 export type LeadSearchResult = { id: string; full_name: string; cpf: string | null; email: string; phone: string | null }
 
+export interface LeadVisit {
+  id: string
+  checked_in_at: string
+  checked_out_at: string
+  amount_spent: number | null
+  notes: string | null
+  card: { number: number } | null
+}
+
+export async function getLeadVisits(leadId: string): Promise<LeadVisit[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('id, checked_in_at, checked_out_at, amount_spent, notes, card:cards(number)')
+    .eq('lead_id', leadId)
+    .not('checked_out_at', 'is', null)
+    .order('checked_in_at', { ascending: false })
+  if (error) throw error
+  return data as LeadVisit[]
+}
+
 export async function searchLeads(query: string): Promise<LeadSearchResult[]> {
   const supabase = createClient()
   const { data, error } = await supabase
