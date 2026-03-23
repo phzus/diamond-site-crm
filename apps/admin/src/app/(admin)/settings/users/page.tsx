@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus, MoreHorizontal } from 'lucide-react'
-import { useUsers, useUpdateUserRole, useDeactivateUser, useReactivateUser } from '@/features/users/hooks/useUsers'
+import { useUsers, useUpdateUserRole, useDeactivateUser, useReactivateUser, useDeleteUser } from '@/features/users/hooks/useUsers'
 import { InviteUserDialog } from '@/features/users/components/InviteUserDialog'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import type { UserProfile } from '@/features/users/services/users.service'
@@ -24,9 +24,11 @@ export default function UsersPage() {
   const updateRole = useUpdateUserRole()
   const deactivate = useDeactivateUser()
   const reactivate = useReactivateUser()
+  const deleteUser = useDeleteUser()
 
   const [inviteOpen, setInviteOpen] = useState(false)
   const [confirmUser, setConfirmUser] = useState<UserProfile | null>(null)
+  const [deleteConfirmUser, setDeleteConfirmUser] = useState<UserProfile | null>(null)
 
   function getInitials(name: string) {
     return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -35,7 +37,7 @@ export default function UsersPage() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader
-        title="Usuários"
+        title="Colaboradores"
         description="Gerencie os colaboradores com acesso ao sistema"
         actions={
           <Button size="sm" onClick={() => setInviteOpen(true)}>
@@ -121,15 +123,21 @@ export default function UsersPage() {
                                 className="text-destructive"
                                 onClick={() => setConfirmUser(user)}
                               >
-                                Desativar usuário
+                                Desativar colaborador
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem
                                 onClick={() => reactivate.mutate(user.id)}
                               >
-                                Reativar usuário
+                                Reativar colaborador
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleteConfirmUser(user)}
+                            >
+                              Excluir do sistema
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -144,7 +152,7 @@ export default function UsersPage() {
 
       <ConfirmDialog
         open={!!confirmUser}
-        title="Desativar usuário"
+        title="Desativar colaborador"
         description={`Tem certeza que deseja desativar ${confirmUser?.full_name}? Ele perderá acesso ao sistema.`}
         confirmLabel="Desativar"
         confirmVariant="destructive"
@@ -153,6 +161,19 @@ export default function UsersPage() {
           setConfirmUser(null)
         }}
         onCancel={() => setConfirmUser(null)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteConfirmUser}
+        title="Excluir colaborador"
+        description={`Tem certeza que deseja excluir permanentemente ${deleteConfirmUser?.full_name}? Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir permanentemente"
+        confirmVariant="destructive"
+        onConfirm={() => {
+          if (deleteConfirmUser) deleteUser.mutate(deleteConfirmUser.id)
+          setDeleteConfirmUser(null)
+        }}
+        onCancel={() => setDeleteConfirmUser(null)}
       />
     </div>
   )

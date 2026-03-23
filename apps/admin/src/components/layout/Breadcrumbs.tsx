@@ -11,7 +11,7 @@ const routeLabels: Record<string, string> = {
   operacional: 'Análise',
   cartoes:     'Cartões',
   settings:    'Configurações',
-  users:       'Usuários',
+  users:       'Colaboradores',
 }
 
 export function Breadcrumbs() {

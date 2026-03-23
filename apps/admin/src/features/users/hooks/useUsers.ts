@@ -7,6 +7,7 @@ import {
   reactivateUser,
 } from '../services/users.service'
 import { inviteUser } from '../actions/invite.action'
+import { deleteUser } from '../actions/delete.action'
 
 export function useUsers() {
   return useQuery({
@@ -77,6 +78,25 @@ export function useReactivateUser() {
     },
     onError: () => {
       toast.error('Erro ao reativar usuário')
+    },
+  })
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (userId: string) =>
+      deleteUser(userId).then((res) => {
+        if (res.error) throw new Error(res.error)
+        return res
+      }),
+    onSuccess: () => {
+      toast.success('Colaborador excluído')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
     },
   })
 }

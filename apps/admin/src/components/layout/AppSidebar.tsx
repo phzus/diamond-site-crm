@@ -7,7 +7,7 @@ import { logoutAction } from '@/features/auth/actions/logout.action'
 import {
   LayoutDashboard,
   Users,
-  Settings,
+  Users2,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -29,12 +29,12 @@ import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
 const navItems = [
   { href: '/dashboard', label: 'Painel', icon: LayoutDashboard, exact: true },
   { href: '/leads', label: 'Clientes', icon: Users },
-  { href: '/operacional', label: 'Análise', icon: BarChart2, exact: true },
   { href: '/operacional/cartoes', label: 'Cartões', icon: LayoutGrid },
+  { href: '/operacional', label: 'Análise', icon: BarChart2, exact: true },
 ]
 
 const adminNavItems = [
-  { href: '/settings/users', label: 'Usuários', icon: Settings },
+  { href: '/settings/users', label: 'Colaboradores', icon: Users2 },
 ]
 
 function NavLinks({
