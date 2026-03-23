@@ -164,8 +164,8 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Nome / Sobrenome */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5">
+              {/* Nome | Sobrenome */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
@@ -201,7 +201,7 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 </div>
               </div>
 
-              {/* Telefone | Aniversário */}
+              {/* Telefone | E-mail */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
@@ -224,6 +224,47 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                 </div>
                 <div className="space-y-1">
                   <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    E-mail *
+                  </label>
+                  <input
+                    {...register("email", {
+                      required: "E-mail é obrigatório",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "E-mail inválido",
+                      },
+                    })}
+                    type="email"
+                    placeholder="joao@email.com"
+                    className={inputClass}
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-400">{errors.email.message}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* CPF | Aniversário */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
+                    CPF
+                  </label>
+                  <input
+                    {...cpfReg}
+                    onChange={(e) => {
+                      e.target.value = formatCpf(e.target.value);
+                      cpfReg.onChange(e);
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="000.000.000-00"
+                    maxLength={14}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
                     Aniversário
                   </label>
                   <input
@@ -233,25 +274,6 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                     style={{ colorScheme: "dark" }}
                   />
                 </div>
-              </div>
-
-              {/* CPF */}
-              <div className="space-y-1">
-                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                  CPF
-                </label>
-                <input
-                  {...cpfReg}
-                  onChange={(e) => {
-                    e.target.value = formatCpf(e.target.value);
-                    cpfReg.onChange(e);
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="000.000.000-00"
-                  maxLength={14}
-                  className={inputClass}
-                />
               </div>
 
               {/* Estado | Cidade */}
@@ -291,28 +313,6 @@ export function RegisterPopup({ open, onClose }: RegisterPopupProps) {
                     className={inputClass}
                   />
                 </div>
-              </div>
-
-              {/* E-mail */}
-              <div className="space-y-1">
-                <label className="font-helvetica text-xs font-light uppercase tracking-widest text-white/50">
-                  E-mail *
-                </label>
-                <input
-                  {...register("email", {
-                    required: "E-mail é obrigatório",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "E-mail inválido",
-                    },
-                  })}
-                  type="email"
-                  placeholder="joao@email.com"
-                  className={inputClass}
-                />
-                {errors.email && (
-                  <p className="text-xs text-red-400">{errors.email.message}</p>
-                )}
               </div>
 
               {/* Indicação */}

@@ -62,7 +62,8 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
   const cpfReg = register('cpf')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5">
+      {/* Nome | Sobrenome */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <Label htmlFor="first_name">Nome *</Label>
@@ -76,12 +77,21 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
         </div>
       </div>
 
+      {/* Telefone | Email */}
       <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label htmlFor="phone">Telefone</Label>
+          <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
+        </div>
         <div className="space-y-1">
           <Label htmlFor="email">Email *</Label>
           <Input id="email" type="email" {...register('email')} placeholder="joao@email.com" />
           {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
         </div>
+      </div>
+
+      {/* CPF | Aniversário */}
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <Label htmlFor="cpf">CPF</Label>
           <Input
@@ -95,24 +105,14 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
             maxLength={14}
           />
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <Label htmlFor="birth_date">Aniversário</Label>
           <Input id="birth_date" type="date" {...register('birth_date')} />
         </div>
-        <div className="space-y-1">
-          <Label htmlFor="phone">Telefone</Label>
-          <Input id="phone" {...register('phone')} placeholder="(11) 99999-9999" />
-        </div>
       </div>
 
+      {/* Estado | Cidade */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <Label htmlFor="city">Cidade</Label>
-          <Input id="city" {...register('city')} placeholder="São Paulo" />
-        </div>
         <div className="space-y-1">
           <Label>Estado</Label>
           <Select
@@ -130,8 +130,13 @@ export function LeadForm({ defaultValues, onSubmit, isLoading, submitLabel = 'Sa
             </SelectContent>
           </Select>
         </div>
+        <div className="space-y-1">
+          <Label htmlFor="city">Cidade</Label>
+          <Input id="city" {...register('city')} placeholder="São Paulo" />
+        </div>
       </div>
 
+      {/* Convidado por */}
       <div className="space-y-1">
         <Label htmlFor="invited_by">Convidado por</Label>
         <Input id="invited_by" {...register('invited_by')} placeholder="Nome de quem indicou" />
