@@ -38,6 +38,19 @@ export async function findLeadByCpf(cpf: string) {
   return data
 }
 
+export type LeadSearchResult = { id: string; full_name: string; cpf: string | null; email: string; phone: string | null }
+
+export async function searchLeads(query: string): Promise<LeadSearchResult[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('leads')
+    .select('id, full_name, cpf, email, phone')
+    .or(`full_name.ilike.%${query}%,cpf.ilike.%${query}%`)
+    .limit(8)
+  if (error) throw error
+  return data as LeadSearchResult[]
+}
+
 export async function checkinLead(
   leadId: string,
   operatorId: string

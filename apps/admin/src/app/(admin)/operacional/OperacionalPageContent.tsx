@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -11,17 +11,29 @@ import { Loader2, Search, UserCheck, UserX, CreditCard, LogOut } from 'lucide-re
 import { toast } from 'sonner'
 import { useCheckin, useCheckout, useOpenSessions, useCheckinRealtime } from '@/features/checkin/hooks/useCheckin'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
-import { findLeadByCpf } from '@/features/checkin/services/checkin.service'
-import { format, formatDistanceToNow } from 'date-fns'
+import { searchLeads, type LeadSearchResult } from '@/features/checkin/services/checkin.service'
+import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { Session } from '@/features/checkin/types/checkin.types'
 
-function formatCpf(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 11)
-  if (digits.length <= 3) return digits
-  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
-  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
+function ElapsedTimer({ since }: { since: string }) {
+  const [elapsed, setElapsed] = useState(() => getElapsed(since))
+
+  useEffect(() => {
+    const id = setInterval(() => setElapsed(getElapsed(since)), 1000)
+    return () => clearInterval(id)
+  }, [since])
+
+  return <span className="text-xs font-mono text-muted-foreground shrink-0">{elapsed}</span>
+}
+
+function getElapsed(since: string): string {
+  const diff = Math.floor((Date.now() - new Date(since).getTime()) / 1000)
+  const h = Math.floor(diff / 3600)
+  const m = Math.floor((diff % 3600) / 60)
+  const s = diff % 60
+  if (h > 0) return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
 interface CheckoutForm {
@@ -37,30 +49,59 @@ export function OperacionalPageContent() {
   const checkin = useCheckin()
   const checkout = useCheckout()
 
-  const [cpfInput, setCpfInput] = useState('')
-  const [searching, setSearching] = useState(false)
-  const [foundLead, setFoundLead] = useState<{ id: string; full_name: string; cpf: string | null; email: string } | null | 'not_found'>(null)
+  const [query, setQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<LeadSearchResult[]>([])
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [foundLead, setFoundLead] = useState<LeadSearchResult | null | 'not_found'>(null)
   const [checkingIn, setCheckingIn] = useState(false)
 
   const [checkoutSession, setCheckoutSession] = useState<Session | null>(null)
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CheckoutForm>()
 
-  async function handleSearch() {
-    const raw = cpfInput.replace(/\D/g, '')
-    if (raw.length < 11) {
-      toast.error('CPF incompleto.')
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Debounced live search
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (trimmed.length < 2) {
+      setSuggestions([])
+      setShowDropdown(false)
       return
     }
-    setSearching(true)
-    setFoundLead(null)
-    try {
-      const lead = await findLeadByCpf(cpfInput)
-      setFoundLead(lead ?? 'not_found')
-    } catch {
-      toast.error('Erro ao buscar CPF.')
-    } finally {
-      setSearching(false)
+
+    const timer = setTimeout(async () => {
+      setLoadingSuggestions(true)
+      try {
+        const results = await searchLeads(trimmed)
+        setSuggestions(results)
+        setShowDropdown(true)
+      } catch {
+        setSuggestions([])
+      } finally {
+        setLoadingSuggestions(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [query])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
     }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function selectLead(lead: LeadSearchResult) {
+    setFoundLead(lead)
+    setQuery(lead.full_name)
+    setShowDropdown(false)
   }
 
   async function handleCheckin() {
@@ -68,8 +109,9 @@ export function OperacionalPageContent() {
     setCheckingIn(true)
     try {
       await checkin.mutateAsync({ leadId: foundLead.id, operatorId: currentUser.id })
-      setCpfInput('')
+      setQuery('')
       setFoundLead(null)
+      setSuggestions([])
     } finally {
       setCheckingIn(false)
     }
@@ -78,18 +120,10 @@ export function OperacionalPageContent() {
   function handleCheckoutSubmit(values: CheckoutForm) {
     if (!checkoutSession) return
     const amount = parseFloat(values.amount.replace(',', '.'))
-    if (isNaN(amount) || amount < 0) {
-      toast.error('Valor inválido.')
-      return
-    }
+    if (isNaN(amount) || amount < 0) { toast.error('Valor inválido.'); return }
     checkout.mutate(
       { sessionId: checkoutSession.id, cardId: checkoutSession.card_id, amountSpent: amount, notes: values.notes },
-      {
-        onSuccess: () => {
-          setCheckoutSession(null)
-          reset()
-        },
-      }
+      { onSuccess: () => { setCheckoutSession(null); reset() } }
     )
   }
 
@@ -102,48 +136,75 @@ export function OperacionalPageContent() {
 
       <div className="flex-1 overflow-auto p-6 space-y-8">
 
-        {/* ── Busca por CPF ── */}
+        {/* ── Busca por nome ou CPF ── */}
         <div className="max-w-md space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Check-in por CPF
+            Check-in
           </h2>
-          <div className="flex gap-2">
-            <Input
-              placeholder="000.000.000-00"
-              value={cpfInput}
-              onChange={(e) => {
-                setCpfInput(formatCpf(e.target.value))
-                setFoundLead(null)
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              maxLength={14}
-              inputMode="numeric"
-              className="font-mono"
-            />
-            <Button onClick={handleSearch} disabled={searching}>
-              {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            </Button>
+
+          <div className="relative" ref={dropdownRef}>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  ref={inputRef}
+                  placeholder="Buscar por nome ou CPF..."
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value)
+                    setFoundLead(null)
+                  }}
+                  onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+                  autoComplete="off"
+                />
+                {loadingSuggestions && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+              </div>
+              <Button variant="outline" size="icon" disabled>
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Dropdown de sugestões */}
+            {showDropdown && suggestions.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
+                {suggestions.map((lead) => (
+                  <button
+                    key={lead.id}
+                    type="button"
+                    onClick={() => selectLead(lead)}
+                    className="w-full flex items-start gap-3 px-4 py-2.5 text-left hover:bg-accent transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{lead.full_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {lead.cpf ? `CPF: ${lead.cpf}` : lead.email}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {showDropdown && suggestions.length === 0 && !loadingSuggestions && query.trim().length >= 2 && (
+              <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <UserX className="h-4 w-4 shrink-0 text-destructive" />
+                  Nenhum cliente encontrado. Cadastre na aba <strong className="ml-1">Clientes</strong>.
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Resultado da busca */}
-          {foundLead === 'not_found' && (
-            <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
-              <UserX className="h-5 w-5 text-destructive shrink-0" />
-              <div>
-                <p className="text-sm font-medium">CPF não encontrado</p>
-                <p className="text-xs text-muted-foreground">
-                  Cadastre o cliente primeiro na aba <strong>Clientes</strong>.
-                </p>
-              </div>
-            </div>
-          )}
-
+          {/* Lead selecionado */}
           {foundLead && foundLead !== 'not_found' && (
             <div className="flex items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3">
               <UserCheck className="h-5 w-5 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">{foundLead.full_name}</p>
-                <p className="text-xs text-muted-foreground truncate">{foundLead.email}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {foundLead.cpf ? `CPF: ${foundLead.cpf}` : foundLead.email}
+                </p>
               </div>
               <Button size="sm" onClick={handleCheckin} disabled={checkingIn}>
                 {checkingIn
@@ -180,10 +241,10 @@ export function OperacionalPageContent() {
                     {session.card?.number}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{session.lead?.full_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(session.checked_in_at), { addSuffix: true, locale: ptBR })}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium truncate">{session.lead?.full_name}</p>
+                      <ElapsedTimer since={session.checked_in_at} />
+                    </div>
                   </div>
                   <Button
                     size="sm"
@@ -203,7 +264,7 @@ export function OperacionalPageContent() {
 
       {/* ── Dialog de check-out ── */}
       <Dialog open={!!checkoutSession} onOpenChange={(o) => { if (!o) { setCheckoutSession(null); reset() } }}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-100">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
