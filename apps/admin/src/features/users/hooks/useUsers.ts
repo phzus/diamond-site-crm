@@ -100,3 +100,26 @@ export function useDeleteUser() {
     },
   })
 }
+
+export function useBulkDeleteUsers() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (userIds: string[]) =>
+      Promise.all(
+        userIds.map((id) =>
+          deleteUser(id).then((res) => {
+            if (res.error) throw new Error(res.error)
+          })
+        )
+      ),
+    onSuccess: (_, userIds) => {
+      toast.success(`${userIds.length} colaborador(es) excluído(s)`)
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+  })
+}
