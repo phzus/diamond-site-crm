@@ -15,7 +15,7 @@ export function RecentLeadsTable() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">Leads Recentes</CardTitle>
+        <CardTitle className="text-base">Clientes Recentes</CardTitle>
         <Link href="/leads" className="text-xs text-muted-foreground hover:underline">
           Ver todos
         </Link>

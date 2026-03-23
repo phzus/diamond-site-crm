@@ -310,10 +310,10 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
       <Dialog open={discardConfirmOpen} onOpenChange={setDiscardConfirmOpen}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
-            <DialogTitle>Descartar lead?</DialogTitle>
+            <DialogTitle>Descartar cliente?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            O lead será marcado como Descartado. Esta ação pode ser revertida alterando o status manualmente.
+            O cliente será marcado como Descartado. Esta ação pode ser revertida alterando o status manualmente.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDiscardConfirmOpen(false)}>Cancelar</Button>

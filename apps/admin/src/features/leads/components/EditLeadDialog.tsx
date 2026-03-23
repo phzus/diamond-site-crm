@@ -64,7 +64,7 @@ export function EditLeadDialog({ leadId, onClose }: EditLeadDialogProps) {
     <Dialog open={!!leadId} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Editar Lead</DialogTitle>
+          <DialogTitle>Editar Cliente</DialogTitle>
         </DialogHeader>
         {lead && (
           <LeadForm

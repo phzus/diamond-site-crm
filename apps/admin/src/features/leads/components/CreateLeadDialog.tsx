@@ -52,12 +52,12 @@ export function CreateLeadDialog({ open, onClose }: CreateLeadDialogProps) {
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Novo Lead</DialogTitle>
+          <DialogTitle>Novo Cliente</DialogTitle>
         </DialogHeader>
         <LeadForm
           onSubmit={handleSubmit}
           isLoading={createLead.isPending}
-          submitLabel="Criar Lead"
+          submitLabel="Criar Cliente"
         />
       </DialogContent>
     </Dialog>

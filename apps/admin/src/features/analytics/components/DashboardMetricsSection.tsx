@@ -10,7 +10,7 @@ export function DashboardMetricsSection() {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
-        title="Total de Leads"
+        title="Total de Clientes"
         value={data?.totalLeads ?? '—'}
         description="Últimos 30 dias"
         icon={Users}
@@ -18,7 +18,7 @@ export function DashboardMetricsSection() {
         highlight="blue"
       />
       <MetricCard
-        title="Leads Novos Hoje"
+        title="Clientes Novos Hoje"
         value={data?.newToday ?? '—'}
         description="Desde meia-noite"
         icon={UserPlus}

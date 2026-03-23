@@ -56,13 +56,13 @@ export function useCreateLead() {
     mutationFn: createLead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
-      toast.success('Lead criado com sucesso!')
+      toast.success('Cliente criado com sucesso!')
     },
     onError: (error: any) => {
       if (error?.code === '23505') {
         toast.error('Este e-mail já está cadastrado.')
       } else {
-        toast.error('Erro ao criar lead.')
+        toast.error('Erro ao criar cliente.')
       }
     },
   })
@@ -77,9 +77,9 @@ export function useUpdateLead() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
       queryClient.invalidateQueries({ queryKey: leadKeys.detail(id) })
-      toast.success('Lead atualizado!')
+      toast.success('Cliente atualizado!')
     },
-    onError: () => toast.error('Erro ao atualizar lead.'),
+    onError: () => toast.error('Erro ao atualizar cliente.'),
   })
 }
 
@@ -151,9 +151,9 @@ export function useDeleteLead() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
-      toast.success('Lead removido.')
+      toast.success('Cliente removido.')
     },
-    onError: () => toast.error('Erro ao remover lead.'),
+    onError: () => toast.error('Erro ao remover cliente.'),
   })
 }
 
@@ -165,9 +165,9 @@ export function useBulkUpdateStatus() {
       bulkUpdateStatus(ids, status),
     onSuccess: (_, { ids }) => {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
-      toast.success(`${ids.length} leads atualizados.`)
+      toast.success(`${ids.length} clientes atualizados.`)
     },
-    onError: () => toast.error('Erro ao atualizar leads em lote.'),
+    onError: () => toast.error('Erro ao atualizar clientes em lote.'),
   })
 }
 
@@ -185,8 +185,8 @@ export function useBulkAssign() {
     },
     onSuccess: (_, { ids }) => {
       queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
-      toast.success(`${ids.length} leads atribuídos.`)
+      toast.success(`${ids.length} clientes atribuídos.`)
     },
-    onError: () => toast.error('Erro ao atribuir leads.'),
+    onError: () => toast.error('Erro ao atribuir clientes.'),
   })
 }

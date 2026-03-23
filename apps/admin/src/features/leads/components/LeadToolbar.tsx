@@ -144,7 +144,7 @@ export function LeadToolbar({ onNewLead, onExport, selectedCount }: LeadToolbarP
         <div className="ml-auto flex gap-2">
           <Button onClick={onNewLead} size="sm">
             <Plus className="h-4 w-4 mr-2" />
-            Novo Lead
+            Novo Cliente
           </Button>
         </div>
       </div>

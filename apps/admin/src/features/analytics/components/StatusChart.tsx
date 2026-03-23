@@ -32,7 +32,7 @@ export function StatusChart() {
               <XAxis dataKey="label" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
               <Tooltip
-                formatter={(value) => [value, 'Leads']}
+                formatter={(value) => [value, 'Clientes']}
                 labelStyle={{ fontSize: 12 }}
               />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>

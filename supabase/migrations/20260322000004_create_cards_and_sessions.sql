@@ -1,17 +1,17 @@
 -- ============================================================
--- 1. TABELA: cards (cartões físicos 1–400)
+-- 1. TABELA: cards (cartões físicos 1–450)
 -- ============================================================
 CREATE TABLE public.cards (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  number     INTEGER NOT NULL UNIQUE CHECK (number BETWEEN 1 AND 400),
+  number     INTEGER NOT NULL UNIQUE CHECK (number BETWEEN 1 AND 450),
   status     TEXT NOT NULL DEFAULT 'available'
                CHECK (status IN ('available', 'in_use', 'blocked')),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Popular todos os 400 cartões de uma vez
+-- Popular todos os 450 cartões de uma vez
 INSERT INTO public.cards (number)
-SELECT generate_series(1, 400);
+SELECT generate_series(1, 450);
 
 -- Trigger de updated_at
 CREATE TRIGGER set_cards_updated_at

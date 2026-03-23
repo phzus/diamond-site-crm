@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { LeadStatus } from '../types/lead.types'
 
 const actionLabels: Record<string, string> = {
-  created:        'Lead criado',
+  created:        'Cliente criado',
   status_changed: 'Status alterado',
   note_added:     'Nota adicionada',
   assigned:       'Responsável atribuído',

@@ -22,7 +22,7 @@ export function BulkActionsBar({ selectedIds, onClear, onExport }: BulkActionsBa
   return (
     <div className="flex items-center gap-3 px-4 py-2 bg-primary/10 border border-primary/20 rounded-md">
       <span className="text-sm font-medium">
-        {selectedIds.length} lead{selectedIds.length > 1 ? 's' : ''} selecionado{selectedIds.length > 1 ? 's' : ''}
+        {selectedIds.length} cliente{selectedIds.length > 1 ? 's' : ''} selecionado{selectedIds.length > 1 ? 's' : ''}
       </span>
 
       <Select onValueChange={(status) => bulkUpdate.mutate({ ids: selectedIds, status })}>

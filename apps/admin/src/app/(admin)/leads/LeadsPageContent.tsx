@@ -69,8 +69,8 @@ export function LeadsPageContent() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader
-        title="Leads"
-        description={data ? `${data.count} lead${data.count !== 1 ? 's' : ''} encontrado${data.count !== 1 ? 's' : ''}` : ''}
+        title="Clientes"
+        description={data ? `${data.count} cliente${data.count !== 1 ? 's' : ''} encontrado${data.count !== 1 ? 's' : ''}` : ''}
         actions={
           <div className="flex items-center gap-2 border rounded-md p-0.5">
             <Button
@@ -150,7 +150,7 @@ export function LeadsPageContent() {
                       <TableCell colSpan={leadColumns.length} className="text-center py-16 text-muted-foreground">
                         {filters.search || filters.status.length > 0
                           ? 'Nenhum lead encontrado com esses filtros.'
-                          : 'Nenhum lead ainda. Os primeiros chegarão pela landing page.'}
+                          : 'Nenhum cliente ainda. Os primeiros chegarão pela landing page.'}
                       </TableCell>
                     </TableRow>
                   ) : (

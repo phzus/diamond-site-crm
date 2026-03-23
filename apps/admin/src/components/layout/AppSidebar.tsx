@@ -14,7 +14,7 @@ import {
   Menu,
   Sun,
   Moon,
-  ClipboardList,
+  BarChart2,
   LayoutGrid,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -27,9 +27,9 @@ import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/leads', label: 'Leads', icon: Users },
-  { href: '/operacional', label: 'Operacional', icon: ClipboardList, exact: true },
+  { href: '/dashboard', label: 'Painel', icon: LayoutDashboard, exact: true },
+  { href: '/leads', label: 'Clientes', icon: Users },
+  { href: '/operacional', label: 'Análise', icon: BarChart2, exact: true },
   { href: '/operacional/cartoes', label: 'Cartões', icon: LayoutGrid },
 ]
 

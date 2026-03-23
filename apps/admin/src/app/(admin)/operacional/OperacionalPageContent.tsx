@@ -96,7 +96,7 @@ export function OperacionalPageContent() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader
-        title="Operacional"
+        title="Painel"
         description="Check-in e controle de cartões"
       />
 
@@ -132,7 +132,7 @@ export function OperacionalPageContent() {
               <div>
                 <p className="text-sm font-medium">CPF não encontrado</p>
                 <p className="text-xs text-muted-foreground">
-                  Cadastre o cliente primeiro na aba <strong>Leads</strong>.
+                  Cadastre o cliente primeiro na aba <strong>Clientes</strong>.
                 </p>
               </div>
             </div>

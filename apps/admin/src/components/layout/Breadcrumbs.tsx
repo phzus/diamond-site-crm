@@ -6,10 +6,12 @@ import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const routeLabels: Record<string, string> = {
-  dashboard:  'Dashboard',
-  leads:      'Leads',
-  settings:   'Configurações',
-  users:      'Usuários',
+  dashboard:   'Painel',
+  leads:       'Clientes',
+  operacional: 'Análise',
+  cartoes:     'Cartões',
+  settings:    'Configurações',
+  users:       'Usuários',
 }
 
 export function Breadcrumbs() {
