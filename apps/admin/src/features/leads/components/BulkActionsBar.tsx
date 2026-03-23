@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { X, Download } from 'lucide-react'
+import { X, Download, Trash2 } from 'lucide-react'
 import { useBulkUpdateStatus, useBulkAssign } from '../hooks/useLeads'
 import { useUsers } from '@/features/users/hooks/useUsers'
 
@@ -10,9 +10,10 @@ interface BulkActionsBarProps {
   selectedIds: string[]
   onClear: () => void
   onExport: () => void
+  onDelete: () => void
 }
 
-export function BulkActionsBar({ selectedIds, onClear, onExport }: BulkActionsBarProps) {
+export function BulkActionsBar({ selectedIds, onClear, onExport, onDelete }: BulkActionsBarProps) {
   const bulkUpdate = useBulkUpdateStatus()
   const bulkAssign = useBulkAssign()
   const { data: users } = useUsers()
@@ -55,6 +56,11 @@ export function BulkActionsBar({ selectedIds, onClear, onExport }: BulkActionsBa
       <Button variant="outline" size="sm" onClick={onExport}>
         <Download className="h-3.5 w-3.5 mr-1.5" />
         Exportar
+      </Button>
+
+      <Button variant="destructive" size="sm" onClick={onDelete}>
+        <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+        Excluir
       </Button>
 
       <Button variant="ghost" size="sm" onClick={onClear}>

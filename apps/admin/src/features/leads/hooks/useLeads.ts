@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import {
   getLeads, getLeadById, createLead, updateLead,
-  updateLeadStatus, deleteLead, bulkUpdateStatus
+  updateLeadStatus, deleteLead, bulkUpdateStatus, bulkDeleteLeads,
 } from '../services/leads.service'
 import type { Lead, LeadFilters } from '../types/lead.types'
 import { toast } from 'sonner'
@@ -168,6 +168,19 @@ export function useBulkUpdateStatus() {
       toast.success(`${ids.length} clientes atualizados.`)
     },
     onError: () => toast.error('Erro ao atualizar clientes em lote.'),
+  })
+}
+
+export function useBulkDeleteLeads() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (ids: string[]) => bulkDeleteLeads(ids),
+    onSuccess: (_, ids) => {
+      queryClient.invalidateQueries({ queryKey: leadKeys.lists() })
+      toast.success(`${ids.length} cliente(s) excluído(s).`)
+    },
+    onError: () => toast.error('Erro ao excluir clientes.'),
   })
 }
 

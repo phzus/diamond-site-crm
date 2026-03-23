@@ -10,12 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { LeadNotesTab } from './LeadNotesTab'
 import { LeadHistoryTab } from './LeadHistoryTab'
-import { useLead, useUpdateLeadStatus, useUpdateLead } from '../hooks/useLeads'
+import { useLead, useUpdateLeadStatus, useUpdateLead, useDeleteLead } from '../hooks/useLeads'
 import { useUsers } from '@/features/users/hooks/useUsers'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare, Building2, Cake, CreditCard } from 'lucide-react'
+import { Globe, Phone, Mail, ChevronDown, MapPin, UserCheck, MessageSquare, Building2, Cake, CreditCard, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { LeadStatus } from '../types/lead.types'
 
@@ -35,8 +35,9 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
   const { data: currentUser } = useCurrentUser()
   const updateStatus = useUpdateLeadStatus()
   const updateLead = useUpdateLead()
+  const deleteLead = useDeleteLead()
 
-  const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [statusPopoverOpen, setStatusPopoverOpen] = useState(false)
 
   async function handleInlineUpdate(field: string, value: any) {
@@ -63,9 +64,11 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
     })
   }
 
-  function handleDiscard() {
-    setDiscardConfirmOpen(false)
-    handleStatusChange('discarded')
+  function handleDelete() {
+    if (!leadId || !currentUser) return
+    deleteLead.mutate({ id: leadId, userId: currentUser.id }, {
+      onSuccess: () => { setDeleteConfirmOpen(false); onClose() },
+    })
   }
 
   return (
@@ -295,11 +298,11 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
 
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="ml-auto text-destructive hover:text-destructive"
-                  onClick={() => setDiscardConfirmOpen(true)}
+                  size="icon"
+                  className="ml-auto h-8 w-8 text-muted-foreground hover:bg-destructive hover:text-white"
+                  onClick={() => setDeleteConfirmOpen(true)}
                 >
-                  Descartar
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </>
@@ -307,17 +310,19 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
         </SheetContent>
       </Sheet>
 
-      <Dialog open={discardConfirmOpen} onOpenChange={setDiscardConfirmOpen}>
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
-            <DialogTitle>Descartar cliente?</DialogTitle>
+            <DialogTitle>Excluir cliente?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            O cliente será marcado como Descartado. Esta ação pode ser revertida alterando o status manualmente.
+            O cliente <strong>{lead?.full_name}</strong> será removido permanentemente. Esta ação não pode ser desfeita.
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDiscardConfirmOpen(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleDiscard}>Descartar</Button>
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteLead.isPending}>
+              Excluir permanentemente
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

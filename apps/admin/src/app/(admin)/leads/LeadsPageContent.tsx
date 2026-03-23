@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
-import { useLeads, useLeadsRealtime } from '@/features/leads/hooks/useLeads'
+import { useLeads, useLeadsRealtime, useDeleteLead, useBulkDeleteLeads } from '@/features/leads/hooks/useLeads'
 import { useLeadFilters } from '@/features/leads/hooks/useLeadFilters'
-import { leadColumns } from '@/features/leads/components/LeadColumns'
+import { createLeadColumns } from '@/features/leads/components/LeadColumns'
 import { LeadToolbar } from '@/features/leads/components/LeadToolbar'
 import { LeadSheet } from '@/features/leads/components/LeadSheet'
 import { CreateLeadDialog } from '@/features/leads/components/CreateLeadDialog'
 import { EditLeadDialog } from '@/features/leads/components/EditLeadDialog'
 import { BulkActionsBar } from '@/features/leads/components/BulkActionsBar'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, ChevronRight, LayoutList, Columns } from 'lucide-react'
 import { exportLeadsToCsv } from '@/features/leads/utils/exportCsv'
 import { KanbanBoard } from '@/features/leads/components/kanban/KanbanBoard'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { toast } from 'sonner'
 import type { Lead } from '@/features/leads/types/lead.types'
 
@@ -27,6 +29,12 @@ export function LeadsPageContent() {
   const [editLeadId, setEditLeadId] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
+  const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null)
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
+
+  const { data: currentUser } = useCurrentUser()
+  const deleteLead = useDeleteLead()
+  const bulkDelete = useBulkDeleteLeads()
 
   const isKanban = filters.view === 'kanban'
 
@@ -44,9 +52,14 @@ export function LeadsPageContent() {
     sortOrder:   filters.sortOrder as any,
   })
 
+  const columns = useMemo(
+    () => createLeadColumns((lead) => setDeleteTarget(lead)),
+    []
+  )
+
   const table = useReactTable({
     data: data?.data || [],
-    columns: leadColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,
@@ -105,6 +118,7 @@ export function LeadsPageContent() {
             selectedIds={selectedIds}
             onClear={() => setRowSelection({})}
             onExport={handleExport}
+            onDelete={() => setBulkDeleteOpen(true)}
           />
         )}
 
@@ -140,14 +154,14 @@ export function LeadsPageContent() {
                   {isLoading ? (
                     Array.from({ length: 8 }).map((_, i) => (
                       <TableRow key={i}>
-                        {leadColumns.map((_, j) => (
+                        {columns.map((_, j) => (
                           <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : data?.data.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={leadColumns.length} className="text-center py-16 text-muted-foreground">
+                      <TableCell colSpan={columns.length} className="text-center py-16 text-muted-foreground">
                         {filters.search || filters.status.length > 0
                           ? 'Nenhum lead encontrado com esses filtros.'
                           : 'Nenhum cliente ainda. Os primeiros chegarão pela landing page.'}
@@ -209,6 +223,39 @@ export function LeadsPageContent() {
       />
       <CreateLeadDialog open={createOpen} onClose={() => setCreateOpen(false)} />
       <EditLeadDialog leadId={editLeadId} onClose={() => setEditLeadId(null)} />
+
+      {/* Confirm: delete single lead from row */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Excluir cliente?"
+        description={`${deleteTarget?.full_name} será removido permanentemente. Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir permanentemente"
+        confirmVariant="destructive"
+        onConfirm={() => {
+          if (deleteTarget && currentUser) {
+            deleteLead.mutate(
+              { id: deleteTarget.id, userId: currentUser.id },
+              { onSuccess: () => setDeleteTarget(null) }
+            )
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
+      {/* Confirm: bulk delete */}
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        title="Excluir clientes selecionados?"
+        description={`${selectedIds.length} cliente(s) serão removidos permanentemente. Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir todos"
+        confirmVariant="destructive"
+        onConfirm={() => {
+          bulkDelete.mutate(selectedIds, {
+            onSuccess: () => { setBulkDeleteOpen(false); setRowSelection({}) },
+          })
+        }}
+        onCancel={() => setBulkDeleteOpen(false)}
+      />
     </div>
   )
 }
