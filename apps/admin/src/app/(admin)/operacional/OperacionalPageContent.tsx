@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { Loader2, Search, UserCheck, UserX, CreditCard, LogOut } from 'lucide-react'
+import { Loader2, Search, UserCheck, UserX, CreditCard, LogOut, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCheckin, useCheckout, useOpenSessions, useCheckinRealtime } from '@/features/checkin/hooks/useCheckin'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { searchLeads, type LeadSearchResult } from '@/features/checkin/services/checkin.service'
+import { LeadSheet } from '@/features/leads/components/LeadSheet'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { Session } from '@/features/checkin/types/checkin.types'
@@ -57,6 +58,7 @@ export function OperacionalPageContent() {
   const [checkingIn, setCheckingIn] = useState(false)
 
   const [checkoutSession, setCheckoutSession] = useState<Session | null>(null)
+  const [infoLeadId, setInfoLeadId] = useState<string | null>(null)
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CheckoutForm>()
 
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -247,6 +249,14 @@ export function OperacionalPageContent() {
                     </div>
                   </div>
                   <Button
+                    size="icon"
+                    variant="ghost"
+                    className="shrink-0 h-8 w-8 text-muted-foreground"
+                    onClick={() => setInfoLeadId(session.lead_id)}
+                  >
+                    <Info className="h-4 w-4" />
+                  </Button>
+                  <Button
                     size="sm"
                     variant="outline"
                     className="shrink-0 gap-1"
@@ -261,6 +271,13 @@ export function OperacionalPageContent() {
           )}
         </div>
       </div>
+
+      {/* ── Sheet de informações do lead ── */}
+      <LeadSheet
+        leadId={infoLeadId}
+        onClose={() => setInfoLeadId(null)}
+        onEdit={() => setInfoLeadId(null)}
+      />
 
       {/* ── Dialog de check-out ── */}
       <Dialog open={!!checkoutSession} onOpenChange={(o) => { if (!o) { setCheckoutSession(null); reset() } }}>
