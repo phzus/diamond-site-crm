@@ -79,7 +79,7 @@ export async function getLeadVisits(leadId: string): Promise<LeadVisit[]> {
     .not('checked_out_at', 'is', null)
     .order('checked_in_at', { ascending: false })
   if (error) throw error
-  return data as LeadVisit[]
+  return data as unknown as LeadVisit[]
 }
 
 export async function searchLeads(query: string): Promise<LeadSearchResult[]> {
