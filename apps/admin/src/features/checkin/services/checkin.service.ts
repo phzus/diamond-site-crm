@@ -67,7 +67,7 @@ export async function getCardHistory(cardId: string): Promise<CardVisit[]> {
     .not('checked_out_at', 'is', null)
     .order('checked_in_at', { ascending: false })
   if (error) throw error
-  return data as CardVisit[]
+  return data as unknown as CardVisit[]
 }
 
 export async function getLeadVisits(leadId: string): Promise<LeadVisit[]> {
