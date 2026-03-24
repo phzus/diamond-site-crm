@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { AppSidebar } from '@/components/layout/AppSidebar'
 import { PageTransition } from '@/components/layout/PageTransition'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
