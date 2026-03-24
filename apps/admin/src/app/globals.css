@@ -61,8 +61,8 @@
   /* Primário */
   --primary:              0 0% 100%;
   --primary-foreground:   0 0% 0%;
-  --accent:               0 0% 100%;
-  --accent-foreground:    0 0% 0%;
+  --accent:               0 0% 14%;
+  --accent-foreground:    0 0% 100%;
 
   /* Destrutivo */
   --destructive:          0 100% 60%;  /* #ff3333 */
