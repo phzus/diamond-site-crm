@@ -15,7 +15,7 @@ import {
   Sun,
   Moon,
   BarChart2,
-  LayoutGrid,
+  CreditCard,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
@@ -29,7 +29,7 @@ import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
 const navItems = [
   { href: '/dashboard', label: 'Painel', icon: LayoutDashboard, exact: true },
   { href: '/leads', label: 'Clientes', icon: Users },
-  { href: '/operacional/cartoes', label: 'Cartões', icon: LayoutGrid },
+  { href: '/operacional/cartoes', label: 'Comandas', icon: CreditCard },
   { href: '/operacional', label: 'Análise', icon: BarChart2, exact: true },
 ]
 

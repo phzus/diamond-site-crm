@@ -72,7 +72,7 @@ export function CardHistoryModal({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-white">
-                Cartão nº {card.number}
+                Comanda nº {card.number}
               </span>
               {isInUse && (
                 <span className="text-[10px] uppercase tracking-widest text-rose-400 font-medium px-2 py-0.5 rounded-full" style={{ background: 'rgba(239,68,68,0.12)' }}>
@@ -173,7 +173,7 @@ export function CardHistoryModal({
                 className="flex-1 rounded-full py-2.5 text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
                 style={{ background: 'rgba(255,255,255,0.92)', color: '#080816' }}
               >
-                Fechar Cartão
+                Fechar Comanda
               </button>
             ) : (
               <>

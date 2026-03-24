@@ -95,12 +95,12 @@ export default function CartoesPage() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader
-        title="Mapa de Cartões"
+        title="Mapa de Comandas"
         description={`${available} disponíveis · ${inUse} em uso · ${blocked} bloqueados`}
         actions={
           <Button size="sm" onClick={() => setAddOpen(true)}>
             <Plus className="h-4 w-4 mr-1.5" />
-            Adicionar cartão
+            Adicionar comanda
           </Button>
         }
       />
@@ -125,7 +125,7 @@ export default function CartoesPage() {
               <span className="flex items-center gap-1.5">
                 <span className="h-3 w-3 rounded-sm bg-zinc-400/50" /> Bloqueado
               </span>
-              <span className="text-muted-foreground/60">· Clique num cartão para ver histórico</span>
+              <span className="text-muted-foreground/60">· Clique numa comanda para ver histórico</span>
             </div>
 
             {/* Grid */}
@@ -141,7 +141,7 @@ export default function CartoesPage() {
                     title={
                       isInUse && session
                         ? `${session.lead?.full_name} — desde ${format(new Date(session.checked_in_at), 'HH:mm', { locale: ptBR })}`
-                        : `Cartão ${card.number}${isBlocked ? ' (bloqueado)' : ''}`
+                        : `Comanda ${card.number}${isBlocked ? ' (bloqueada)' : ''}`
                     }
                     onClick={() => handleCardClick(card)}
                     className={[
@@ -177,10 +177,10 @@ export default function CartoesPage() {
       <Dialog open={deleteConfirmOpen} onOpenChange={(o) => !o && setDeleteConfirmOpen(false)}>
         <DialogContent className="sm:max-w-90">
           <DialogHeader>
-            <DialogTitle>Excluir cartão nº {selectedCard?.number}?</DialogTitle>
+            <DialogTitle>Excluir comanda nº {selectedCard?.number}?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            O cartão será removido permanentemente do sistema. Esta ação não pode ser desfeita.
+            A comanda será removida permanentemente do sistema. Esta ação não pode ser desfeita.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancelar</Button>
@@ -197,11 +197,11 @@ export default function CartoesPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Adicionar cartão
+              Adicionar comanda
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-1">
-            <Label htmlFor="card-number">Número do cartão</Label>
+            <Label htmlFor="card-number">Número da comanda</Label>
             <Input
               id="card-number"
               type="number"
@@ -229,7 +229,7 @@ export default function CartoesPage() {
         <DialogContent className="sm:max-w-100">
           <DialogHeader>
             <DialogTitle>
-              Fechar Cartão nº {checkoutSession?.card?.number}
+              Fechar Comanda nº {checkoutSession?.card?.number}
             </DialogTitle>
           </DialogHeader>
 

@@ -9,7 +9,7 @@ const routeLabels: Record<string, string> = {
   dashboard:   'Painel',
   leads:       'Clientes',
   operacional: 'Análise',
-  cartoes:     'Cartões',
+  cartoes:     'Comandas',
   settings:    'Configurações',
   users:       'Colaboradores',
 }

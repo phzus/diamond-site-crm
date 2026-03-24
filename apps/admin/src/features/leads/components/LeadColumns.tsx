@@ -2,13 +2,52 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import type { Lead } from '../types/lead.types'
-import { StatusBadge } from '@/components/shared/StatusBadge'
+import type { LeadStatus } from '../types/lead.types'
+import { StatusBadge, statusConfig } from '@/components/shared/StatusBadge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowUpDown, Trash2 } from 'lucide-react'
+import { useUpdateLeadStatus } from '../hooks/useLeads'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+
+const STATUS_OPTIONS = Object.keys(statusConfig) as LeadStatus[]
+
+function StatusCell({ lead }: { lead: Lead }) {
+  const updateStatus = useUpdateLeadStatus()
+  const { data: currentUser } = useCurrentUser()
+
+  return (
+    <Select
+      value={lead.status}
+      onValueChange={(value) => {
+        updateStatus.mutate({
+          id: lead.id,
+          status: value as LeadStatus,
+          fromStatus: lead.status,
+          userId: currentUser?.id,
+        })
+      }}
+    >
+      <SelectTrigger
+        className="h-auto w-auto border-0 bg-transparent p-0 shadow-none focus:ring-0 [&>svg]:hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <StatusBadge status={lead.status} />
+      </SelectTrigger>
+      <SelectContent>
+        {STATUS_OPTIONS.map((s) => (
+          <SelectItem key={s} value={s}>
+            <StatusBadge status={s} />
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
 
 const priorityConfig = {
   high:   { label: 'Alta',  dot: 'bg-red-500' },
@@ -57,7 +96,7 @@ export function createLeadColumns(onDelete: (lead: Lead) => void): ColumnDef<Lea
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: ({ row }) => <StatusCell lead={row.original} />,
     },
     {
       accessorKey: 'priority',
