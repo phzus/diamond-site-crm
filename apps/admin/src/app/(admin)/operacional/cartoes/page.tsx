@@ -168,9 +168,7 @@ export default function CartoesPage() {
         onClose={() => setSelectedCard(null)}
         onCheckout={handleCardCheckout}
         onBlock={handleToggleBlock}
-        onDelete={() => setDeleteConfirmOpen(true)}
         isUpdating={updateStatus.isPending}
-        isDeleting={deleteCard.isPending}
       />
 
       {/* Dialog: confirmar exclusão */}

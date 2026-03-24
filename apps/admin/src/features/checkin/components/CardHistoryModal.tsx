@@ -3,7 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { differenceInMinutes, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { CreditCard, Loader2, Lock, Trash2, Unlock, X } from 'lucide-react'
+import { CreditCard, Loader2, Lock, Unlock, X } from 'lucide-react'
 import { useCardHistory } from '../hooks/useCheckin'
 import type { Card } from '../types/checkin.types'
 
@@ -12,9 +12,7 @@ interface Props {
   onClose: () => void
   onCheckout: () => void
   onBlock: () => void
-  onDelete: () => void
   isUpdating?: boolean
-  isDeleting?: boolean
 }
 
 const glassOverlay =
@@ -176,40 +174,23 @@ export function CardHistoryModal({
                 Fechar Comanda
               </button>
             ) : (
-              <>
-                <button
-                  onClick={onBlock}
-                  disabled={isUpdating}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium text-white/75 hover:text-white transition-all disabled:opacity-50"
-                  style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
-                >
-                  {isUpdating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : isBlocked ? (
-                    <><Unlock className="h-4 w-4" /> Desbloquear</>
-                  ) : (
-                    <><Lock className="h-4 w-4" /> Bloquear</>
-                  )}
-                </button>
-                <button
-                  onClick={onDelete}
-                  disabled={isDeleting}
-                  className="flex items-center justify-center gap-2 rounded-full py-2.5 px-5 text-sm font-medium text-rose-400 hover:text-rose-300 transition-all disabled:opacity-50"
-                  style={{
-                    background: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.18)',
-                  }}
-                >
-                  {isDeleting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <><Trash2 className="h-4 w-4" /> Excluir</>
-                  )}
-                </button>
-              </>
+              <button
+                onClick={onBlock}
+                disabled={isUpdating}
+                className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium text-white/75 hover:text-white transition-all disabled:opacity-50"
+                style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                }}
+              >
+                {isUpdating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isBlocked ? (
+                  <><Unlock className="h-4 w-4" /> Desbloquear</>
+                ) : (
+                  <><Lock className="h-4 w-4" /> Bloquear</>
+                )}
+              </button>
             )}
           </div>
         </Dialog.Content>
