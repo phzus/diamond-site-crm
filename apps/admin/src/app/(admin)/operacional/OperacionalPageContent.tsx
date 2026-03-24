@@ -273,13 +273,12 @@ export function OperacionalPageContent() {
             </p>
           </div>
 
-          <div className="space-y-3.5">
-            <Label htmlFor="comanda-number">Número da comanda *</Label>
+          <div>
             <Input
               id="comanda-number"
               type="number"
               min={1}
-              placeholder=""
+              placeholder="Número da comanda"
               value={cardNumberStr}
               onChange={(e) => setCardNumberStr(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
