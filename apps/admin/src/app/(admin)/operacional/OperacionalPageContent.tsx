@@ -258,43 +258,49 @@ export function OperacionalPageContent() {
 
       {/* ── Modal de check-in (escolher comanda) ── */}
       <Dialog open={!!checkinTarget} onOpenChange={(o) => { if (!o) { setCheckinTarget(null); setCardNumberStr('') } }}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-md p-8">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserCheck className="h-4 w-4" />
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <UserCheck className="h-5 w-5" />
               Realizar Check-in
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-1 text-sm">
-            <p className="font-semibold">{checkinTarget?.full_name}</p>
-            <p className="text-muted-foreground text-xs">
+          <div className="space-y-1">
+            <p className="font-semibold text-base">{checkinTarget?.full_name}</p>
+            <p className="text-muted-foreground text-sm">
               {checkinTarget?.cpf ? `CPF: ${checkinTarget.cpf}` : checkinTarget?.email}
             </p>
           </div>
 
-          <div>
-            <Input
-              id="comanda-number"
-              type="number"
-              min={1}
-              placeholder="Número da comanda"
-              value={cardNumberStr}
-              onChange={(e) => setCardNumberStr(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
-              autoFocus
-              className="font-mono text-lg"
-            />
-          </div>
+          <Input
+            id="comanda-number"
+            type="number"
+            min={1}
+            placeholder="Número da comanda"
+            value={cardNumberStr}
+            onChange={(e) => setCardNumberStr(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
+            autoFocus
+            className="font-mono text-xl h-14 text-center"
+          />
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setCheckinTarget(null); setCardNumberStr('') }}>
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <Button
+              variant="outline"
+              className="border-red-500/40 text-red-500 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/60 h-11"
+              onClick={() => { setCheckinTarget(null); setCardNumberStr('') }}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleCheckin} disabled={checkin.isPending || !cardNumberStr}>
+            <Button
+              className="h-11"
+              onClick={handleCheckin}
+              disabled={checkin.isPending || !cardNumberStr}
+            >
               {checkin.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Realizar Check-in'}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
