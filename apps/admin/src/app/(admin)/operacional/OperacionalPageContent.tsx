@@ -273,7 +273,7 @@ export function OperacionalPageContent() {
             </p>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-3.5">
             <Label htmlFor="comanda-number">Número da comanda *</Label>
             <Input
               id="comanda-number"
