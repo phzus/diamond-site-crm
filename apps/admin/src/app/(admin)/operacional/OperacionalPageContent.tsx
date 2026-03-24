@@ -279,7 +279,7 @@ export function OperacionalPageContent() {
               id="comanda-number"
               type="number"
               min={1}
-              placeholder="Ex: 42"
+              placeholder=""
               value={cardNumberStr}
               onChange={(e) => setCardNumberStr(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
