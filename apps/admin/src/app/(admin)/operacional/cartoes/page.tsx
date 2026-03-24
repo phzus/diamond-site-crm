@@ -5,11 +5,12 @@ import {
   useCards, useOpenSessions, useCheckinRealtime,
   useCheckout, useAddCard, useDeleteCard, useUpdateCardStatus,
 } from '@/features/checkin/hooks/useCheckin'
+import { CardHistoryModal } from '@/features/checkin/components/CardHistoryModal'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, CreditCard, Plus, Trash2, Lock, Unlock } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -29,13 +30,13 @@ export default function CartoesPage() {
   const deleteCard = useDeleteCard()
   const updateStatus = useUpdateCardStatus()
 
-  // checkout dialog
+  // card history modal (all cards)
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+
+  // checkout dialog (in_use cards)
   const [checkoutSession, setCheckoutSession] = useState<Session | null>(null)
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CheckoutForm>()
-
-  // card management dialog (available / blocked cards)
-  const [managedCard, setManagedCard] = useState<Card | null>(null)
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
 
   // add card dialog
   const [addOpen, setAddOpen] = useState(false)
@@ -48,12 +49,31 @@ export default function CartoesPage() {
   const blocked   = cards?.filter((c) => c.status === 'blocked').length ?? 0
 
   function handleCardClick(card: Card) {
-    if (card.status === 'in_use') {
-      const session = sessionByCard.get(card.id)
-      if (session) setCheckoutSession(session)
-    } else {
-      setManagedCard(card)
+    setSelectedCard(card)
+  }
+
+  function handleCardCheckout() {
+    if (!selectedCard) return
+    const session = sessionByCard.get(selectedCard.id)
+    if (session) {
+      setSelectedCard(null)
+      setCheckoutSession(session)
     }
+  }
+
+  function handleToggleBlock() {
+    if (!selectedCard) return
+    const next = selectedCard.status === 'blocked' ? 'available' : 'blocked'
+    updateStatus.mutate({ id: selectedCard.id, status: next }, {
+      onSuccess: () => setSelectedCard(null),
+    })
+  }
+
+  function handleDeleteCard() {
+    if (!selectedCard) return
+    deleteCard.mutate(selectedCard.id, {
+      onSuccess: () => { setSelectedCard(null); setDeleteConfirmOpen(false) },
+    })
   }
 
   function handleCheckoutSubmit(values: CheckoutForm) {
@@ -70,21 +90,6 @@ export default function CartoesPage() {
     const num = parseInt(addNumber, 10)
     if (isNaN(num) || num < 1) { toast.error('Número inválido.'); return }
     addCard.mutate(num, { onSuccess: () => { setAddOpen(false); setAddNumber('') } })
-  }
-
-  function handleToggleBlock() {
-    if (!managedCard) return
-    const next = managedCard.status === 'blocked' ? 'available' : 'blocked'
-    updateStatus.mutate({ id: managedCard.id, status: next }, {
-      onSuccess: () => setManagedCard(null),
-    })
-  }
-
-  function handleDelete() {
-    if (!managedCard) return
-    deleteCard.mutate(managedCard.id, {
-      onSuccess: () => { setManagedCard(null); setDeleteConfirmOpen(false) },
-    })
   }
 
   return (
@@ -120,7 +125,7 @@ export default function CartoesPage() {
               <span className="flex items-center gap-1.5">
                 <span className="h-3 w-3 rounded-sm bg-zinc-400/50" /> Bloqueado
               </span>
-              <span className="text-muted-foreground/60">· Clique num cartão para gerenciá-lo</span>
+              <span className="text-muted-foreground/60">· Clique num cartão para ver histórico</span>
             </div>
 
             {/* Grid */}
@@ -157,61 +162,29 @@ export default function CartoesPage() {
         )}
       </div>
 
-      {/* Dialog: gerenciar cartão (disponível / bloqueado) */}
-      <Dialog open={!!managedCard && !deleteConfirmOpen} onOpenChange={(o) => !o && setManagedCard(null)}>
-        <DialogContent className="sm:max-w-[320px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
-              Cartão nº {managedCard?.number}
-            </DialogTitle>
-          </DialogHeader>
-
-          <p className="text-sm text-muted-foreground">
-            Status atual:{' '}
-            <strong>{managedCard?.status === 'blocked' ? 'Bloqueado' : 'Disponível'}</strong>
-          </p>
-
-          <div className="flex flex-col gap-2 pt-1">
-            <Button
-              variant="outline"
-              className="justify-start gap-2"
-              onClick={handleToggleBlock}
-              disabled={updateStatus.isPending}
-            >
-              {managedCard?.status === 'blocked'
-                ? <><Unlock className="h-4 w-4" /> Desbloquear cartão</>
-                : <><Lock className="h-4 w-4" /> Bloquear cartão</>
-              }
-            </Button>
-            <Button
-              variant="outline"
-              className="justify-start gap-2 text-destructive hover:bg-destructive hover:text-white border-destructive/30"
-              onClick={() => setDeleteConfirmOpen(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-              Excluir cartão
-            </Button>
-          </div>
-
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setManagedCard(null)}>Fechar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Modal: histórico do cartão */}
+      <CardHistoryModal
+        card={selectedCard}
+        onClose={() => setSelectedCard(null)}
+        onCheckout={handleCardCheckout}
+        onBlock={handleToggleBlock}
+        onDelete={() => setDeleteConfirmOpen(true)}
+        isUpdating={updateStatus.isPending}
+        isDeleting={deleteCard.isPending}
+      />
 
       {/* Dialog: confirmar exclusão */}
       <Dialog open={deleteConfirmOpen} onOpenChange={(o) => !o && setDeleteConfirmOpen(false)}>
         <DialogContent className="sm:max-w-90">
           <DialogHeader>
-            <DialogTitle>Excluir cartão nº {managedCard?.number}?</DialogTitle>
+            <DialogTitle>Excluir cartão nº {selectedCard?.number}?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             O cartão será removido permanentemente do sistema. Esta ação não pode ser desfeita.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleteCard.isPending}>
+            <Button variant="destructive" onClick={handleDeleteCard} disabled={deleteCard.isPending}>
               {deleteCard.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Excluir'}
             </Button>
           </DialogFooter>
@@ -253,10 +226,9 @@ export default function CartoesPage() {
 
       {/* Dialog: check-out */}
       <Dialog open={!!checkoutSession} onOpenChange={(o) => { if (!o) { setCheckoutSession(null); reset() } }}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-100">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4" />
+            <DialogTitle>
               Fechar Cartão nº {checkoutSession?.card?.number}
             </DialogTitle>
           </DialogHeader>

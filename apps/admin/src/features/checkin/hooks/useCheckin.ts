@@ -12,6 +12,7 @@ import {
   addCard,
   deleteCard,
   updateCardStatus,
+  getCardHistory,
 } from '../services/checkin.service'
 
 export const checkinKeys = {
@@ -102,6 +103,14 @@ export function useUpdateCardStatus() {
       queryClient.invalidateQueries({ queryKey: checkinKeys.cards })
     },
     onError: () => toast.error('Erro ao atualizar status do cartão.'),
+  })
+}
+
+export function useCardHistory(cardId: string | null) {
+  return useQuery({
+    queryKey: ['card-history', cardId],
+    queryFn: () => getCardHistory(cardId!),
+    enabled: !!cardId,
   })
 }
 

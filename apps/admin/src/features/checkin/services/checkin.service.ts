@@ -49,6 +49,27 @@ export interface LeadVisit {
   card: { number: number } | null
 }
 
+export interface CardVisit {
+  id: string
+  checked_in_at: string
+  checked_out_at: string
+  amount_spent: number | null
+  notes: string | null
+  lead: { id: string; full_name: string } | null
+}
+
+export async function getCardHistory(cardId: string): Promise<CardVisit[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('id, checked_in_at, checked_out_at, amount_spent, notes, lead:leads(id, full_name)')
+    .eq('card_id', cardId)
+    .not('checked_out_at', 'is', null)
+    .order('checked_in_at', { ascending: false })
+  if (error) throw error
+  return data as CardVisit[]
+}
+
 export async function getLeadVisits(leadId: string): Promise<LeadVisit[]> {
   const supabase = createClient()
   const { data, error } = await supabase
