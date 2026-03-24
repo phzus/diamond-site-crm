@@ -282,7 +282,8 @@ export function OperacionalPageContent() {
             onChange={(e) => setCardNumberStr(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
             autoFocus
-            className="font-mono text-xl h-14 text-center"
+            className="font-mono h-14 text-center"
+            style={{ fontSize: '23px' }}
           />
 
           <div className="grid grid-cols-2 gap-3 pt-1">
