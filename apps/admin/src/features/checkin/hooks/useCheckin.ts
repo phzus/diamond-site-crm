@@ -59,12 +59,12 @@ export function useCheckin() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ leadId, operatorId }: { leadId: string; operatorId: string }) =>
-      checkinLead(leadId, operatorId),
+    mutationFn: ({ leadId, operatorId, cardNumber }: { leadId: string; operatorId: string; cardNumber: number }) =>
+      checkinLead(leadId, operatorId, cardNumber),
     onSuccess: ({ card }) => {
       queryClient.invalidateQueries({ queryKey: checkinKeys.cards })
       queryClient.invalidateQueries({ queryKey: checkinKeys.sessions })
-      toast.success(`Check-in realizado — Cartão nº ${card.number}`)
+      toast.success(`Check-in realizado — Comanda nº ${card.number}`)
     },
     onError: (error: Error) => toast.error(error.message || 'Erro ao realizar check-in.'),
   })

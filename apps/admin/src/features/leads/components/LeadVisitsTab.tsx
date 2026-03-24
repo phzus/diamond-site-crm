@@ -47,7 +47,7 @@ export function LeadVisitsTab({ leadId }: { leadId: string }) {
             </p>
             <div className="flex items-center gap-1.5 text-xs text-white/50">
               <CreditCard className="h-3.5 w-3.5" />
-              Cartão {visit.card?.number ?? '—'}
+              Comanda {visit.card?.number ?? '—'}
             </div>
           </div>
 

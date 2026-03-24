@@ -95,20 +95,21 @@ export async function searchLeads(query: string): Promise<LeadSearchResult[]> {
 
 export async function checkinLead(
   leadId: string,
-  operatorId: string
+  operatorId: string,
+  cardNumber: number
 ): Promise<{ session: Session; card: Card }> {
   const supabase = createClient()
 
-  // Pega o próximo cartão disponível (menor número)
+  // Busca a comanda pelo número informado
   const { data: card, error: cardError } = await supabase
     .from('cards')
     .select('*')
-    .eq('status', 'available')
-    .order('number', { ascending: true })
-    .limit(1)
+    .eq('number', cardNumber)
     .single()
 
-  if (cardError || !card) throw new Error('Nenhum cartão disponível no momento.')
+  if (cardError || !card) throw new Error(`Comanda nº ${cardNumber} não encontrada.`)
+  if (card.status === 'in_use') throw new Error(`Comanda nº ${cardNumber} já está em uso.`)
+  if (card.status === 'blocked') throw new Error(`Comanda nº ${cardNumber} está bloqueada.`)
 
   // Marca cartão como em uso
   const { error: updateError } = await supabase

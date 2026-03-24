@@ -54,8 +54,10 @@ export function OperacionalPageContent() {
   const [suggestions, setSuggestions] = useState<LeadSearchResult[]>([])
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
-  const [foundLead, setFoundLead] = useState<LeadSearchResult | null | 'not_found'>(null)
-  const [checkingIn, setCheckingIn] = useState(false)
+
+  // modal de check-in (escolher número da comanda)
+  const [checkinTarget, setCheckinTarget] = useState<LeadSearchResult | null>(null)
+  const [cardNumberStr, setCardNumberStr] = useState('')
 
   const [checkoutSession, setCheckoutSession] = useState<Session | null>(null)
   const [infoLeadId, setInfoLeadId] = useState<string | null>(null)
@@ -101,22 +103,22 @@ export function OperacionalPageContent() {
   }, [])
 
   function selectLead(lead: LeadSearchResult) {
-    setFoundLead(lead)
-    setQuery(lead.full_name)
+    setCheckinTarget(lead)
+    setCardNumberStr('')
     setShowDropdown(false)
+    setQuery('')
+    setSuggestions([])
   }
 
   async function handleCheckin() {
-    if (!foundLead || foundLead === 'not_found' || !currentUser) return
-    setCheckingIn(true)
+    if (!checkinTarget || !currentUser) return
+    const cardNumber = parseInt(cardNumberStr, 10)
+    if (isNaN(cardNumber) || cardNumber < 1) { toast.error('Informe um número de comanda válido.'); return }
     try {
-      await checkin.mutateAsync({ leadId: foundLead.id, operatorId: currentUser.id })
-      setQuery('')
-      setFoundLead(null)
-      setSuggestions([])
-    } finally {
-      setCheckingIn(false)
-    }
+      await checkin.mutateAsync({ leadId: checkinTarget.id, operatorId: currentUser.id, cardNumber })
+      setCheckinTarget(null)
+      setCardNumberStr('')
+    } catch { /* handled by hook */ }
   }
 
   function handleCheckoutSubmit(values: CheckoutForm) {
@@ -198,24 +200,6 @@ export function OperacionalPageContent() {
             )}
           </div>
 
-          {/* Lead selecionado */}
-          {foundLead && foundLead !== 'not_found' && (
-            <div className="flex items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3">
-              <UserCheck className="h-5 w-5 text-primary shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">{foundLead.full_name}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {foundLead.cpf ? `CPF: ${foundLead.cpf}` : foundLead.email}
-                </p>
-              </div>
-              <Button size="sm" onClick={handleCheckin} disabled={checkingIn}>
-                {checkingIn
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : 'Check-in →'
-                }
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* ── Sessões abertas ── */}
@@ -272,6 +256,49 @@ export function OperacionalPageContent() {
         </div>
       </div>
 
+      {/* ── Modal de check-in (escolher comanda) ── */}
+      <Dialog open={!!checkinTarget} onOpenChange={(o) => { if (!o) { setCheckinTarget(null); setCardNumberStr('') } }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4" />
+              Realizar Check-in
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold">{checkinTarget?.full_name}</p>
+            <p className="text-muted-foreground text-xs">
+              {checkinTarget?.cpf ? `CPF: ${checkinTarget.cpf}` : checkinTarget?.email}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="comanda-number">Número da comanda *</Label>
+            <Input
+              id="comanda-number"
+              type="number"
+              min={1}
+              placeholder="Ex: 42"
+              value={cardNumberStr}
+              onChange={(e) => setCardNumberStr(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCheckin()}
+              autoFocus
+              className="font-mono text-lg"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setCheckinTarget(null); setCardNumberStr('') }}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCheckin} disabled={checkin.isPending || !cardNumberStr}>
+              {checkin.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Realizar Check-in'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ── Sheet de informações do lead ── */}
       <LeadSheet
         leadId={infoLeadId}
@@ -285,7 +312,7 @@ export function OperacionalPageContent() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              Fechar Cartão nº {checkoutSession?.card?.number}
+              Fechar Comanda nº {checkoutSession?.card?.number}
             </DialogTitle>
           </DialogHeader>
 
