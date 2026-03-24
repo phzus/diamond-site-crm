@@ -155,7 +155,7 @@ export function OperacionalPageContent() {
                   value={query}
                   onChange={(e) => {
                     setQuery(e.target.value)
-                    setFoundLead(null)
+                    setCheckinTarget(null)
                   }}
                   onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
                   autoComplete="off"
