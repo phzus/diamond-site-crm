@@ -11,9 +11,10 @@ interface BulkActionsBarProps {
   onClear: () => void
   onExport: () => void
   onDelete: () => void
+  isAdmin?: boolean
 }
 
-export function BulkActionsBar({ selectedIds, onClear, onExport, onDelete }: BulkActionsBarProps) {
+export function BulkActionsBar({ selectedIds, onClear, onExport, onDelete, isAdmin }: BulkActionsBarProps) {
   const bulkUpdate = useBulkUpdateStatus()
   const bulkAssign = useBulkAssign()
   const { data: users } = useUsers()
@@ -58,10 +59,12 @@ export function BulkActionsBar({ selectedIds, onClear, onExport, onDelete }: Bul
         Exportar
       </Button>
 
-      <Button variant="destructive" size="sm" onClick={onDelete}>
-        <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-        Excluir
-      </Button>
+      {isAdmin && (
+        <Button variant="destructive" size="sm" onClick={onDelete}>
+          <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+          Excluir
+        </Button>
+      )}
 
       <Button variant="ghost" size="sm" onClick={onClear}>
         <X className="h-3.5 w-3.5" />

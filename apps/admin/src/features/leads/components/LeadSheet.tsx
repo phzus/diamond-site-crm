@@ -37,6 +37,7 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
   const { data: lead, isLoading } = useLead(leadId || '')
   const { data: users } = useUsers()
   const { data: currentUser } = useCurrentUser()
+  const isAdmin = currentUser?.role === 'admin'
   const updateStatus = useUpdateLeadStatus()
   const updateLead = useUpdateLead()
   const deleteLead = useDeleteLead()
@@ -332,14 +333,16 @@ export function LeadSheet({ leadId, onClose, onEdit }: LeadSheetProps) {
                     </PopoverContent>
                   </Popover>
 
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="ml-auto h-8 w-8 text-white/30 hover:bg-red-500/20 hover:text-red-400"
-                    onClick={() => setDeleteConfirmOpen(true)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {isAdmin && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="ml-auto h-8 w-8 text-white/30 hover:bg-red-500/20 hover:text-red-400"
+                      onClick={() => setDeleteConfirmOpen(true)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </>
             )}

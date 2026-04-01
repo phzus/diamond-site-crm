@@ -33,6 +33,7 @@ export function LeadsPageContent() {
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
 
   const { data: currentUser } = useCurrentUser()
+  const isAdmin = currentUser?.role === 'admin'
   const deleteLead = useDeleteLead()
   const bulkDelete = useBulkDeleteLeads()
 
@@ -53,8 +54,8 @@ export function LeadsPageContent() {
   })
 
   const columns = useMemo(
-    () => createLeadColumns((lead) => setDeleteTarget(lead)),
-    []
+    () => createLeadColumns((lead) => setDeleteTarget(lead), isAdmin),
+    [isAdmin]
   )
 
   const table = useReactTable({
@@ -119,6 +120,7 @@ export function LeadsPageContent() {
             onClear={() => setRowSelection({})}
             onExport={handleExport}
             onDelete={() => setBulkDeleteOpen(true)}
+            isAdmin={isAdmin}
           />
         )}
 

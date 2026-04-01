@@ -55,7 +55,7 @@ const priorityConfig = {
   low:    { label: 'Baixa', dot: 'bg-green-500' },
 }
 
-export function createLeadColumns(onDelete: (lead: Lead) => void): ColumnDef<Lead>[] {
+export function createLeadColumns(onDelete: (lead: Lead) => void, isAdmin = false): ColumnDef<Lead>[] {
   return [
     {
       id: 'select',
@@ -139,9 +139,9 @@ export function createLeadColumns(onDelete: (lead: Lead) => void): ColumnDef<Lea
       cell: ({ row }) =>
         format(new Date(row.original.created_at), 'dd/MM/yyyy', { locale: ptBR }),
     },
-    {
+    ...(isAdmin ? [{
       id: 'actions',
-      cell: ({ row }) => (
+      cell: ({ row }: { row: { original: Lead } }) => (
         <Button
           variant="ghost"
           size="icon"
@@ -151,7 +151,7 @@ export function createLeadColumns(onDelete: (lead: Lead) => void): ColumnDef<Lea
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       ),
-    },
+    } as ColumnDef<Lead>] : []),
   ]
 }
 
