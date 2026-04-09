@@ -16,7 +16,7 @@ import { useUpdateLeadStatus } from '../../hooks/useLeads'
 import type { Lead, LeadStatus } from '../../types/lead.types'
 
 const KANBAN_COLUMNS: LeadStatus[] = [
-  'new', 'contacted', 'scheduled', 'visited', 'converted', 'discarded'
+  'new', 'frequent', 'blocked'
 ]
 
 interface KanbanBoardProps {

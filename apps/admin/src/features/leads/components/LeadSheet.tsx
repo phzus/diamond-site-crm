@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { LeadStatus } from '../types/lead.types'
 
 const STATUS_OPTIONS: LeadStatus[] = [
-  'new', 'contacted', 'scheduled', 'visited', 'converted', 'discarded'
+  'new', 'frequent', 'blocked'
 ]
 
 const LABEL = 'text-[10px] font-light uppercase tracking-widest text-white/40 mb-1'

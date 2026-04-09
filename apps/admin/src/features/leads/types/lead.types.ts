@@ -1,4 +1,4 @@
-export type LeadStatus = 'new' | 'contacted' | 'scheduled' | 'visited' | 'converted' | 'discarded'
+export type LeadStatus = 'new' | 'frequent' | 'blocked'
 export type LeadPriority = 'low' | 'medium' | 'high'
 export type LeadSource = 'landing-page' | 'manual'
 

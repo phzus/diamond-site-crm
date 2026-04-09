@@ -32,11 +32,8 @@ export function BulkActionsBar({ selectedIds, onClear, onExport, onDelete, isAdm
           <SelectValue placeholder="Mudar status..." />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="contacted">Contactado</SelectItem>
-          <SelectItem value="scheduled">Visita Agendada</SelectItem>
-          <SelectItem value="visited">Visitou</SelectItem>
-          <SelectItem value="converted">Convertido</SelectItem>
-          <SelectItem value="discarded">Descartado</SelectItem>
+          <SelectItem value="frequent">Frequente</SelectItem>
+          <SelectItem value="blocked">Bloqueado</SelectItem>
         </SelectContent>
       </Select>
 

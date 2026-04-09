@@ -150,11 +150,10 @@ export function LeadToolbar({ onNewLead, onExport, selectedCount }: LeadToolbarP
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        {(['new', 'contacted', 'scheduled', 'visited', 'converted', 'discarded'] as const).map((s) => {
+        {(['new', 'frequent', 'blocked'] as const).map((s) => {
           const isActive = filters.status.includes(s)
           const labels: Record<string, string> = {
-            new: 'Novos', contacted: 'Contactados', scheduled: 'Agendados',
-            visited: 'Visitaram', converted: 'Convertidos', discarded: 'Descartados'
+            new: 'Novos', frequent: 'Frequentes', blocked: 'Bloqueados'
           }
           return (
             <button

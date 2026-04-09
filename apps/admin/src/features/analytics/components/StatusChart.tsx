@@ -6,12 +6,9 @@ import { useStatusDistribution } from '../hooks/useDashboard'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const STATUS_COLORS: Record<string, string> = {
-  new:       '#3b82f6',
-  contacted: '#eab308',
-  scheduled: '#a855f7',
-  visited:   '#f97316',
-  converted: '#22c55e',
-  discarded: '#6b7280',
+  new:      '#3b82f6',
+  frequent: '#22c55e',
+  blocked:  '#ef4444',
 }
 
 export function StatusChart() {

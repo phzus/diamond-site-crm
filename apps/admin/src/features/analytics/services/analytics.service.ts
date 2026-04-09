@@ -4,8 +4,8 @@ import { startOfDay, subDays } from 'date-fns'
 export interface DashboardMetrics {
   totalLeads: number
   newToday: number
-  scheduledVisits: number
-  conversionRate: number
+  frequentCount: number
+  blockedCount: number
 }
 
 export interface StatusDistribution {
@@ -22,24 +22,20 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const [
     { count: totalLeads },
     { count: newToday },
-    { count: scheduledVisits },
-    { count: converted },
+    { count: frequentCount },
+    { count: blockedCount },
   ] = await Promise.all([
     supabase.from('leads').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo),
     supabase.from('leads').select('*', { count: 'exact', head: true }).gte('created_at', todayStart),
-    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'scheduled'),
-    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'converted').gte('created_at', thirtyDaysAgo),
+    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'frequent'),
+    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'blocked'),
   ])
-
-  const conversionRate = totalLeads && totalLeads > 0
-    ? Math.round(((converted || 0) / totalLeads) * 100)
-    : 0
 
   return {
     totalLeads: totalLeads || 0,
     newToday: newToday || 0,
-    scheduledVisits: scheduledVisits || 0,
-    conversionRate,
+    frequentCount: frequentCount || 0,
+    blockedCount: blockedCount || 0,
   }
 }
 
@@ -48,12 +44,9 @@ export async function getStatusDistribution(): Promise<StatusDistribution[]> {
   const thirtyDaysAgo = subDays(new Date(), 30).toISOString()
 
   const statusLabels: Record<string, string> = {
-    new:       'Novos',
-    contacted: 'Contactados',
-    scheduled: 'Agendados',
-    visited:   'Visitaram',
-    converted: 'Convertidos',
-    discarded: 'Descartados',
+    new:      'Novos',
+    frequent: 'Frequentes',
+    blocked:  'Bloqueados',
   }
 
   const { data, error } = await supabase

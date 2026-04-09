@@ -2,7 +2,7 @@
 
 import { MetricCard } from './MetricCard'
 import { useDashboardMetrics } from '../hooks/useDashboard'
-import { Users, UserPlus, Calendar, TrendingUp } from 'lucide-react'
+import { Users, UserPlus, Star, ShieldBan } from 'lucide-react'
 
 export function DashboardMetricsSection() {
   const { data, isLoading } = useDashboardMetrics()
@@ -26,20 +26,20 @@ export function DashboardMetricsSection() {
         highlight="purple"
       />
       <MetricCard
-        title="Visitas Agendadas"
-        value={data?.scheduledVisits ?? '—'}
-        description="Aguardando visita"
-        icon={Calendar}
-        isLoading={isLoading}
-        highlight="orange"
-      />
-      <MetricCard
-        title="Taxa de Conversão"
-        value={data ? `${data.conversionRate}%` : '—'}
-        description="Dos últimos 30 dias"
-        icon={TrendingUp}
+        title="Frequentes"
+        value={data?.frequentCount ?? '—'}
+        description="Clientes frequentes"
+        icon={Star}
         isLoading={isLoading}
         highlight="green"
+      />
+      <MetricCard
+        title="Bloqueados"
+        value={data?.blockedCount ?? '—'}
+        description="Clientes bloqueados"
+        icon={ShieldBan}
+        isLoading={isLoading}
+        highlight="orange"
       />
     </div>
   )
